@@ -24,21 +24,32 @@ from util.logger_setup import logger
 from util.DataLoader import DataLoader
 
 
-
 DATA_PATH = './dataset/dataset_test.csv'
 RECORDING_DIR = './dataset/audio'
 
-def main():    
+
+def main():
     # Load the data
-    data_loader = DataLoader(DATA_PATH, RECORDING_DIR)
+    data_loader = DataLoader(
+        data_path=DATA_PATH,
+        recording_dir=RECORDING_DIR,
+        sampling_rate=16000,
+        cut_duration=5.0
+    )
     data = data_loader.get_data()
     logger.info(f"Data loaded from {DATA_PATH}")
     recordings = data_loader.get_recordings()
     supervisions = data_loader.get_supervisions()
-    
+    cuts = data_loader.get_cut_sets()
+
     print(data, '\n')
     print(recordings, '\n')
     print(supervisions, '\n')
-    
+    print(cuts[0], '\n')
+
+
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except Exception as e:
+        logger.error(f"An error occurred: {e}")
