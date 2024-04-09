@@ -19,22 +19,26 @@ The training script uses the following classes and functions:
     - save_model: Function that saves the model to disk.
 '''
 
-# Local imports
+
 from util.logger_setup import logger
 from util.DataLoader import DataLoader
 
-# Third party imports
 
 
 DATA_PATH = './dataset/dataset_test.csv'
+RECORDING_DIR = './dataset/audio'
 
 def main():    
     # Load the data
-    data_loader = DataLoader(DATA_PATH)
+    data_loader = DataLoader(DATA_PATH, RECORDING_DIR)
     data = data_loader.get_data()
     logger.info(f"Data loaded from {DATA_PATH}")
+    recordings = data_loader.get_recordings()
+    supervisions = data_loader.get_supervisions()
     
-    print(data)
+    print(data, '\n')
+    print(recordings, '\n')
+    print(supervisions, '\n')
     
 if __name__ == '__main__':
     main()

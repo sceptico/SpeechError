@@ -1,0 +1,333 @@
+start,end,text
+0.669,7.654," This episode of Astronomy Cast is brought to you by Swinburne Astronomy Online, the world's longest running online astronomy degree program."
+8.095,12.838,Visit astronomy.swin.edu.au for more information.
+23.103,27.147," AstronomyCast, Eighty-three for Monday, April seventh, two thousand eight."
+27.687,29.209,Wave-particle duality.
+29.889,36.936,"Welcome to AstronomyCast, our weekly fact-based journey through the cosmos, where we help you understand not only what we know, but how we know what we know."
+37.556,45.804,"My name is Fraser Cain, I'm the publisher of Universe Today, and with me is Dr. Pamela Gay, a professor at Southern Illinois University, Edwardsville."
+46.044,46.485,Hi Pamela.
+46.645,47.886,"Hey Fraser, how's it going?"
+48.188,53.132," Good, so you're going to be off on another trip shortly, another astronomy conference?"
+53.432,58.837,"Well, the reality of it is, by the time people are listening to this, I'm going to be in Munich, Germany."
+60.018,64.181,"And come Friday, I'm going to be in Cambridge, England."
+64.441,74.69,"And in fact, if any of you are interested in going to a pub with me, I will be at a pub in Cambridge and the exact pub will be listed on the Bout Forum and on starstrider.com."
+75.464,82.111," Okay, once again, I wish I could make it, but it's kind of expensive to fly to Germany."
+82.291,86.335,"Okay, so this week, it's going to be another rough one."
+87.376,89.778,But I think we've been putting off this side of science.
+89.798,90.138,So let's go.
+91.129,94.89, Now have you ever heard that light behaves like both a particle and a wave?
+95.451,98.532,That is the crazy dual nature of light.
+98.612,99.972,But what does that really mean?
+100.392,101.773,How did scientists figure it out?
+101.993,107.975,Today we're going to get into it and try and explain one of the most complicated and non-intuitive concepts in science.
+108.455,110.876,Get ready for a little lesson in quantum physics.
+111.536,117.598,"Alright, so can you explain how does light behave like a wave and how does it behave like a particle?"
+120.356,128.841," Well, if you hit something with a photon of light, it will move just like if you hit it with a soccer ball or something like that."
+129.481,135.125,So this whole idea that you can hit something and it bounces and it moves just like you'd hit it with a particle.
+136.045,137.406, is the particle nature of light.
+137.466,143.651,"Right, and that's the action that is keeping stars ballooning out."
+144.051,149.896,The photons are bumping against each other and trying to get out of the star and that's what keeps the star up.
+150.917,160.884,"That's how solar sails work, where you take the sail and put it into space and just the pressure of the photons bouncing into it will move the sail through space."
+161.485,162.926,Are there any other examples where we use this?
+163.271,165.332, Well you can use it for imaging in fact.
+165.613,175.419,You can't see something except for the fact that photons are coming from some light in the room and bouncing off of whatever you're looking at and then going into your eye.
+176.119,179.441,"So just that little thing, the fact that eyeglasses work."
+179.521,186.066,"You can explain the way that light reflects, the way that light refracts, the way rainbows are formed."
+186.646,192.59,All of this is explained and in fact was initially explained by Newton through the particle idea of light.
+193.089,195.79," All right, so then how is light like a wave?"
+195.95,197.49,Now here's where things get screwy.
+198.87,208.693,"If you take a golf ball and you hit it the exact same way a thousand times, the exact, exact same way in a no wind environment, it will always fly the exact same way."
+209.573,217.755,"Well, if you take a thousand photons and you fling them through a slit a thousand times, they're going to go all over the place."
+219.452,228.619, And the pattern that they're going to end up forming on the other side of the slit is the pattern that you would get from waves going through a slit.
+228.939,229.58,"Right, I've seen this."
+229.6,247.713,"You have like a seawall and your waves are bumping up against the seawall and there's a hole in the seawall and where the wave hits the hole, then you get another little wave that comes out the other side of the hole and continues to propagate through the water."
+247.95,254.295, And what's really cool is you can have a perfectly straight wave front hitting this wall.
+255.076,259.559,And the wave that comes out on the other side of the slit is round.
+259.699,263.522,So you end up with these round wave fronts radiating away.
+265.163,270.067,Even an individual photon will still make that shape?
+270.127,274.13,"Well, not only that, but if you have two slits,"
+275.342,284.589," Just like with two slits in a wave wall, you end up with interfering waves, where in some places the waves get especially big and in some places they get especially small."
+285.33,293.616,"With light, when you have two waves that are interfering, you can end up with places where you see no light, where the light seems to cancel itself out."
+294.517,303.54, And you end up with other places where the light seems to be especially bright and you get this interference pattern with only one photon going through at a time.
+303.62,308.122,So how does one photon at a time manage to interfere with itself?
+308.822,309.622,"Oh, hold on a second."
+310.163,310.983,One photon
+313.163,314.224, interferes with itself?
+314.244,314.924,I don't understand.
+314.944,315.484,No one does.
+315.784,316.965,"Okay, but then what do you see?"
+317.045,323.288,"I mean, how can you, like, what's the experiment to make one photon interfere with itself?"
+323.428,326.209,So the experiment is actually kind of simple to set up.
+326.609,329.471,You just need to have a very precise light source.
+330.211,332.833," You can do this with a set of razor blades, in fact."
+333.373,342.38,You take four razor blades and you very carefully set them up so that you end up with two razor-edged slits that the light can go through.
+342.76,345.122,Then you set up a screen on the far side of the room.
+345.882,356.67,"Or if you want to do this with one photo at a time, which you can't see with your eyeball, you put a detector there, a CCD, something that will detect light."
+357.973,370.876, And then you take a laser and you put so many filters in front of it that all that's getting through from that laser to hit that set of razor blades is one photon at a time.
+371.536,385.3,"When you do this, the one photon goes out, goes through the slits, hits the detector on the other side, and ends up leaving a single point of light on the detector."
+385.64,386.1,No big deal.
+387.967,397.894," But if you let a second photon through, and a third photon through, and a few thousand photons through, it will build up a pattern of interfering waves."
+398.034,407.681,It's in fact the exact same pattern that you get if you allow a few thousand photons to go through those two slits all at the same time and you can see the light and dark pattern with your eyeballs.
+408.301,410.503,"And so if you only had the one photon,"
+411.852,415.295, it would actually be creating an interference pattern.
+415.315,419.378,You just can't see the whole pattern yet because you've only pushed one photon through.
+419.398,421.2,But the pattern is essentially there.
+421.72,427.024,"And what's happening is when we detect that photon, it decides where it's going to be."
+427.625,433.81,"Its wave function collapses, its probability collapses and it picks a place and that's the place it lands."
+435.68,440.862," But different photons have a, they all have the same set of probabilities."
+440.942,442.463,It's most likely it'll end up here.
+442.523,444.184,It's least likely it'll end up here.
+445.244,450.306,"And just like if you roll a dice enough times, you end up getting all the different numbers on the die."
+450.346,453.808,"If you send enough photons through, you end up building up the full pattern."
+454.548,458.11,"But when you send them through one at a time, they each land where they land."
+458.85,465.053,And the full pattern of all of them going through over time builds up this interference pattern.
+465.615,476.078," And so does that mean that each individual photon, because they're building up that interference pattern, each photon is going through both slits at the same time?"
+477.479,480.419,This is where it gets philosophically confusing.
+481.48,492.083,You could either say there is a statistical probability that the photon is going to go through in all these different ways and the photon goes through in one of them.
+493.331,503.398," Or you could say that the wave is passing through both slits, interfering, and the wave function is collapsing in a specific location on the screen."
+505.94,514.826,"So you can look at it either statistically as it's just picking a place and going through there, just like you're rolling the die, and you can't get one through six all at the same time."
+514.926,515.586,It picks one.
+516.627,520.67,"Or you could say that when the observation is made, the wave function collapses and you have a detection."
+521.317,531.984," Right, but aren't there ways that you can like split up the photon or block the photon from going through one of the slits and you can kind of get a better sense of what's actually… that impossible things seem to be happening?"
+533.205,534.646,"No, that's the weird thing."
+535.746,539.429,There are some really cool experiments that have been done with this.
+540.389,545.833,"So if you block one of the slits, you get a completely different pattern for where the photons land."
+547.665,548.947, So that's one cool thing.
+549.087,553.755,You have to have both slits there in order for the photons to build up this distribution.
+553.775,553.895,Right.
+553.915,559.445,You just don't get the interference pattern until you have you have both slits there.
+560.667,560.847,Right.
+562.023,567.006," Now, I saw the coolest demo a few years ago."
+567.727,581.897,"So one of the neat things about this is if you have two slits and you shine a laser through them, you can actually see on the wall a diffraction pattern of bright spots."
+582.697,585.159," separated out, scattered across the wall."
+585.78,596.848,"Now, if you put a lens in front of the slits, instead of getting this diffraction pattern, you can actually focus the two slits and get an image of the slits on the wall."
+597.109,602.973,This is one way that we say the lens forces the light to behave like particles instead of like waves.
+603.093,605.795,This is where we get into the whole it's both argument.
+606.836,617.649," The slits make the photons interact with each other or perhaps with themselves and build a diffraction pattern, an interference pattern on the wall."
+618.51,624.257,The lenses force them to work like particles and you end up getting images as a slit on the wall.
+625.834,637.599," Now, if before you put the lens in, you very carefully take a grid of wires and you arrange the grids so that the wires are in the dark points on the diffraction pattern."
+638.06,641.541,"Then when you're looking at your screen, all you're seeing is the diffraction pattern."
+641.561,648.744,"And when you're looking at your experiment, you're seeing laser shining on two slits, shining, and then this grid of wires that appears to do absolutely nothing."
+648.804,649.925,It's just hanging out there.
+651.325,652.886,And then you see the pretty diffraction pattern.
+653.186,654.667,"Now, if you put that lens back in,"
+656.511,659.614, you just see these focused two slits.
+660.014,663.597,The wires in the experiment seem to have absolutely no effect on anything.
+663.637,664.678,You don't see them at all.
+666.099,675.246,"Now, if you cover one of the two slits and the wires aren't there, then the lens causes you to just see one image of one of the slits."
+676.291,684.416," But with the wires there, when you cover up one of the slits and you get rid of the interference, all of a sudden you can see the wires in the light."
+684.736,686.537,It's the creepiest thing ever to watch.
+686.618,687.938,There are videos of this.
+688.299,692.841,"There's a man in New England, his last name's Afshar, who's been doing this experiment."
+692.901,697.164,And no one's quite sure they understand his interpretation of the experiment.
+697.304,702.447,But what it's showing is a photon is simultaneously a wave and a particle.
+703.768,704.868, And it's just cool.
+705.169,708.229,"All right, now let's go into the how we know what we know part."
+708.789,713.011,How on earth did scientists figure this out?
+713.111,716.912,"Because as I mentioned in the intro, this is completely non-intuitive."
+717.332,725.914,To come up with the answer that light behaves as both a particle and a wave is about the last thing that you would rationally conclude.
+726.634,732.176,And it's not surprising that it took so long for scientists to get to the bottom of this or to the top of it.
+733.977,735.997," So, how did they even go down this road?"
+736.318,739.519,"Well, we've been arguing over it for about four hundred years."
+739.919,747.642,"So, this is one of those things that made people feel queasy to their stomachs starting as early as Christian Huygens."
+748.543,755.026,"He was playing with light and noticed this whole, if you shine light through a slit, you get an interference pattern."
+755.046,758.487,"If you shine light through two slits, you get a different interference pattern."
+759.127,759.868,And it's just cool.
+761.008,763.65, And it can only be explained with waves.
+764.03,764.171,Right.
+764.191,765.331,"And so I guess he said, that's it."
+765.391,765.972,Case closed.
+766.052,766.532,It's waves.
+766.592,766.793,Right.
+767.013,767.313,Yeah.
+767.693,773.317,"Except Newton, working not that differently in time, said, no, no, no, no."
+773.898,774.838,Must be a particle.
+775.239,776.7,"Look, light reflects."
+777.42,779.462,It reflects like particles.
+780.483,786.087,"You hit a mirror at a forty five degree angle, the light goes off at a forty five degree angle."
+786.227,790.19,Ocean waves don't reflect in the same way that particles do.
+790.544,790.844, Right.
+790.984,794.925,Because of this difference in how waves reflect and how light reflects.
+795.486,796.866,"And it was like, no, no, no, particle."
+797.726,812.111,"And he was able to go on and build beautiful mathematical explanations for reflection, for refraction, for light going through prisms and forming rainbows, all based on a particle understanding of light."
+812.947,820.808, So we have Huygens explaining interference and diffraction patterns using a wave nature to light.
+821.108,828.11,And we have Newton explaining lenses and reflection and rainbows using a particle theory of light.
+828.69,830.31,So we have these two competing theories.
+830.85,832.65,And things continued and things continued.
+832.97,841.872,"And then in the eighteen hundreds, there were two more scientists who did a bunch of experiments using interfering light again."
+842.652,857.267," Thomas Young, and Fresnel, who is the person who came up with the, if you've ever seen on a motorhome, those perfectly flat, weirdly textured pieces of plastic that allow you to essentially magnify what's behind your motorhome or something."
+858.088,863.233,Those funky little magnifying flat things use interference of waves.
+864.583,868.745," And so Young and Fresnel said, interference patterns, it's a wave, it's a wave, it's a wave."
+868.845,884.494,"And Maxwell came along and with his theories of electromechanics and his equations of electromechanics, he built into all of his mathematics, which explained electricity, which explained magnetism, which explained all the cool stuff of the day."
+885.674,888.095,"He built in the idea of waves, waves, waves."
+888.196,892.678,And the dominant scientific way of thinking was waves in the eighteen hundreds.
+894.951,896.071, And then things changed again.
+898.012,903.413,"In the early nineteen hundreds, from about nineteen oh one to nineteen oh five, we had people doing more experiments."
+903.833,909.854,"And this is where we keep getting into problems is one set of experiments is particles, one set of experiments is waves."
+909.994,917.436,"And the people then working in the early nineteen hundreds were saying, weird, this now acts like particles, sort of."
+918.197,927.423," So we had Max Planck, who was trying to explain the distribution of the colors of light that come off of heated objects."
+927.463,928.924,This is black body radiation.
+930.345,938.05,"If you've ever seen old generation Star Trek, when Captain Kirk heats up a rock with his phaser and it glows red, that's black body radiation."
+938.711,947.917,"Any of you who've ever used a kiln, when you heat things up and they glow in the kiln, that color is directly related to the temperature of the kiln."
+949.498,951.159, hot coils on your stove.
+951.219,953.101,That's again blackbody radiation.
+953.721,960.867,And he was trying to explain mathematically why you get the distribution of light that is observed.
+962.067,975.878,"And the only way he could explain it was to say that it looks like the energy allowed must have specific values, must have what we call quantized values."
+977.373,983.938, And he came up with this model of the oscillators and the atoms having quantized energies.
+984.018,994.165,And today we understand this as atoms have different allowed energy levels and they release photons with specific energies related to those allowed energy levels.
+994.846,996.027,This was a particle idea.
+997.408,1004.313,"And we also had Einstein come along with his photoelectric effect, which is what he got the first Nobel Prize he got for."
+1005.746,1021.87," And what he found with the photoelectric effect was if you have a sheet of metal, and you shine a blue light on it, you can often get it to conduct electricity by hitting the atoms with light that causes the electrons to leave the atoms."
+1023.35,1028.091,"And if you use pretty feeble blue light, the metal just sort of sat there and went, yeah, I don't care."
+1029.793,1033.836," But if you hit it with brighter blue light, current would flow."
+1034.656,1041.361,"But if you used red light, you could blast it with as much red light as you wanted and nothing would happen."
+1042.702,1049.927,And this seemed to indicate that different colors of light carried different individual energies.
+1050.808,1057.833,"So that when you look at a light beam, the brightness that you see is related to how many particles of light there are."
+1059.014,1064.885, And the energy in each individual particle is related to the color.
+1066.368,1070.716,And what was happening in the red light versus blue light case was
+1072.074,1081.44," If you have a power pitcher, imagine with like cricket or baseball, and they're throwing a fastball, that fastball is going to hurt when it hits."
+1081.74,1092.266,"And if, in this case, we have this power blue photon and it hits a piece of metal's atom just right, it's going to fling off an electron and it's going to flow somewhere."
+1092.682,1092.862, Right.
+1092.902,1102.091,"It's like in your analogy, the ball is hitting so hard that the catcher lets it drop back out again or lets something drop back out again, right?"
+1103.212,1106.835,And the brightness is how many balls you have flying at one time.
+1107.516,1107.656,Right.
+1107.676,1112.661,"But if you have a little leaguer throwing that ball, the catcher is not going to let go of it."
+1113.436,1115.478," Yeah, and so it's just going to hold on."
+1115.638,1122.784,"And you can have as many little leaguers as you want throwing baseballs, and they're probably not going to hurt anyone."
+1124.045,1131.812,"But if you have only one power pitcher out there, and there's forty catchers, he may not be able to get past those forty."
+1132.032,1139.339,"But if you get ten power pitchers out there, they probably have a chance at at least getting one of those catchers to drop a ball."
+1140.945,1150.749," And so what's happening is with the blue light, it's able to knock electrons out and the brightness just says how many pitchers you have going."
+1151.71,1156.292,The color is how powerful the throw and the brightness is how many throwers.
+1156.592,1157.492,So we're back to particle.
+1157.973,1158.793,We're back to particle.
+1159.537,1163.779," And so there's this terrible moment of, oh no, oh dear."
+1164.539,1168.521,"Max Planck has these great equations that say wave, wave, wave, wave."
+1169.342,1175.384,"And Einstein has this great explanation that's particle, particle, particle."
+1176.145,1176.925,"Wow, it's both."
+1177.105,1178.886,There must have been just some awful fights.
+1178.906,1181.247,Can you imagine the battles?
+1181.267,1182.628,Because they're both right.
+1183.028,1187.67,"And so when you're both right, and the evidence supports you, the battles must have just been ferocious."
+1188.453,1190.635," Yes, that's an understatement."
+1190.815,1192.056,Enemies must have been made.
+1192.076,1194.758,Funding must have been cut.
+1194.838,1196.098,It must have been awful.
+1196.439,1200.422,"Well, and it gets even worse because so with light, yeah, fine."
+1200.462,1201.482,It doesn't have mass.
+1201.542,1204.504,Let's let it be both a wave and a particle.
+1204.685,1205.065,Okay.
+1205.165,1206.486,It's just this weird thing.
+1207.819,1215.305," And then a guy by the name of de Broglie came around in the year of the year and he was like, no, really, everything has a wavelength."
+1215.905,1217.446,"You have a wavelength, Fraser."
+1217.967,1223.911,"So not just photons, but larger things like electrons or atoms."
+1224.311,1225.092,Buckyballs.
+1225.332,1225.552,Planets.
+1225.572,1227.954,"You can actually take, yeah."
+1228.274,1229.575,So I'm both a particle and a wave.
+1229.615,1230.135,That's what you're saying.
+1230.175,1233.718,All of our listeners are both particles and waves.
+1233.938,1235.82,Or a collection of particles and a collection of waves.
+1237.557,1237.857, Yes.
+1238.278,1240.699,Isn't that cool?
+1241.019,1242.18,Don't get to the buckyball yet.
+1242.801,1249.105,"So you're saying that like a proton, let's say an atom, a hydrogen atom, how is that both a particle and a wave?"
+1249.385,1251.647,It's hard to explain.
+1251.967,1262.775,The way that we look at it is every object has this wavelength over which it exists and it's capable of interacting and things like that.
+1264.265,1269.387, And this is in part defined by our uncertainty and being able to figure out where things are.
+1270.007,1277.33,"The way I figure out where you are is I look at you, which requires me to look at you with light."
+1278.09,1281.971,And so light is coming from some source and hitting you and coming back to me.
+1282.912,1286.773,"And if I try looking at you in radio light, which has huge wavelengths,"
+1288.061,1292.965, I can only figure out where you are within the wavelength of that radio wave.
+1293.725,1305.574,"But if I start looking at you with x-ray light, I'm probably going to give you cancer, but I can really figure out where you are because my uncertainty is the same size as that x-ray wavelength, which is really, really tiny."
+1306.134,1312.719,"Now, if your wavelength is such that your specific uncertainty in you"
+1314.035,1320.7," is something that is commiserate with the wavelength of how I'm trying to look at you, you can interfere with yourself."
+1322.222,1328.266,"If it gets to what are the spacings between the slits, what are the sizes of the slits, what is your wavelength?"
+1328.787,1334.571,"And your wavelength is defined by – well, this is the de Broglie wavelength."
+1334.651,1339.695,It's defined by this constant called the Planck's constant divided by your momentum.
+1340.222,1344.224, So is it almost like an averaging out of all the particles in my body?
+1344.564,1349.246,It's that everything has this intrinsic uncertainty in where it's located.
+1350.167,1356.19,And this intrinsic little jiggle is what we refer to as the de Broglie wavelength.
+1356.77,1360.712,"Now the catch is that for you, you large human being you,"
+1361.826,1370.756," This uncertainty is so small that it's actually smaller than if I turned you into a black hole, what your Schwarzschild radius would be."
+1371.337,1375.982,There's basically no uncertainty in where you are because I can't measure anything that tiny.
+1376.202,1382.77,"But for single particles, like haven't scientists been able to make hydrogen atoms behave like a wave?"
+1382.99,1385.551, We can make hydrogen atoms behave like waves.
+1385.651,1391.072,"We can make actually the smallest bacteria, if we wanted to, we could make behave like a wave."
+1391.653,1412.139,"We've actually, not me personally, but there was an experiment in nineteen ninety-nine in Vienna where a group of scientists took Buckminsterfullerenes, these are molecules made up of sixty carbon atoms, and they were able to make these Buckminsterfullerenes behave"
+1413.159,1417.263, in this wave-like interfering way and get this diffraction going on.
+1417.363,1427.01,This statistical uncertainty in position led to a distribution on how they were measuring where these things ended up on the other side of two slits.
+1428.311,1429.592,And that's just kind of cool.
+1429.933,1438.199,You have these sixty carbon atoms in this soccer ball-like shape that are perfectly happy to interfere with each other.
+1438.499,1439.44,That's a pretty big atom.
+1439.861,1440.141,Yeah.
+1440.97,1442.491," That's, that's amazing."
+1442.572,1457.946,"So your ability to detect that, or the ability to interfere gets, or the precision with where you are, gets harder to measure the more mass that you have, the more particles that you have."
+1458.306,1458.526,Right.
+1458.767,1459.007,Okay.
+1459.838,1463.961, So what's the current research into this?
+1464.241,1471.646,"Where are scientists trying to push the limits of this right now, apart from making fullerenes behave like waves?"
+1473.708,1478.071,It's always fun to see what new and interesting things you can get to diffract.
+1479.381,1485.247," And there's also the question of, okay, so how do we interpret this?"
+1486.128,1495.797,"One of the classic things that people say is individual items are wave functions, and they move through space in packets."
+1496.197,1498.699,Wave packets is one way that we look at things.
+1499.16,1499.28,And
+1500.054,1507.064," We can either know how fast that thing is moving or we can know where it's located, but we can't know both."
+1508.225,1511.249,"And that when we make an observation, we're collapsing the wave function."
+1511.55,1515.235,And so you can never observe something as both a wave and a particle.
+1516.485,1518.486," And people are trying to figure out, well, is that true?"
+1518.586,1524.79,Can you really not observe the wave function and the particle at the same time?
+1525.791,1535.337,"And this is where the arguing over the experiment I explained earlier with the wires and the diffraction and the lens comes in, and we'll put some links to some stories on that."
+1536.338,1538.82,"And then there's also the, well, really?"
+1540.209,1547.014, Is the wave function only collapsed into a particle when an observation is made or is it really just a particle all the time?
+1547.575,1551.598,"And there's this statistical, so there's philosophical arguments going on as well."
+1552.418,1561.024,"And then there's the whole, well, are we really limited to you can either know where something's located or how fast it's going and not both?"
+1561.185,1567.87,Is there any magical way using enough technology to get around what's called the Heisenberg uncertainty principle?
+1568.69,1577.82," And that's where you start to get into things like, well, we can't have Star Trek transporter beams until we figure out the uncertainty principle, because how do you put someone back together?"
+1577.84,1584.507,And trying to figure out if these are actual limits are things that there's always somebody trying to do.
+1585.464,1585.684, Right.
+1585.744,1594.647,"And there's some other aspects of this like entanglement and like that concept of Schrodinger's cat, the uncertainty."
+1594.707,1599.368,So I think we'll come back to this in future shows and have another go at it.
+1599.408,1601.189,But I think we wanted to get across today just
+1604.15,1614.838," how to understand that when you hear that wave-particle duality, what are we talking about and how do we figure it out, and what were the experiments that brought that into play."
+1614.858,1622.084,"So I think that was a really good explanation, and I'm sure we'll get a lot of questions, but there's going to be some more shows on this."
+1622.104,1632.252,"I mean, I know this is an astronomy podcast, but there's so much physics that are involved, and many times we're having to bring this stuff in as well, so bear with us."
+1632.89,1636.491, spectrographs wouldn't work without light interfering.
+1636.571,1639.912,Stars wouldn't support themselves without waves acting like particles.
+1640.632,1645.173,Everything that makes astronomy work goes back to the wave-particle duality of light.
+1645.893,1646.473,"Oh, there you go then."
+1646.533,1648.173,There's our explanation.
+1648.413,1655.175,And it's just really cool that the uncertainty in you and I is smaller than our Schwarzschild radius.
+1655.905,1656.745, I just think that's cool.
+1656.785,1659.306,"Right, that's the event horizon of a black hole, right?"
+1659.326,1669.771,"If you took my mass, turned me into a black hole, the size where nothing, not even light could escape, that's my uncertainty."
+1669.791,1670.631,It's smaller than that.
+1671.311,1672.732,And that's just cool.
+1675.894,1677.374," All right, well, we'll talk to you next week, Pamela."
+1677.414,1677.955,Have a good trip.
+1678.055,1678.135,Okay.
+1678.155,1679.115,"Talk to you later, Fraser."
+1679.215,1679.535,Bye-bye.
+1680.175,1683.556,"This has been AstronomyCast, a weekly facts-based journey through the cosmos."
+1684.136,1687.798,"Show notes, transcripts and more are available for every episode on our website."
+1688.238,1690.218,Check it out at AstronomyCast.com.
+1690.898,1692.459,We have archives of all past shows.
+1692.499,1694.279,Just click the archive link on our website.
+1694.6,1697.08,"And while you're there, get involved in the conversations on our forums."
+1697.741,1701.322,"Send us any comments, questions or feedback to info at AstronomyCast.com."
+1701.682,1702.382,We read every email.
+1703.237,1707.979, This show is a non-profit educational resource provided by Fraser Cain and Dr. Pamela Gay.
+1708.379,1710.86,We're supported through the kind donations of listeners like you.
+1711.32,1713.881,"If you enjoy Astronomy Cast, why not give us a donation?"
+1714.161,1717.562,Your donations help us pay for bandwidth and provide transcripts and show notes.
+1717.982,1720.223,Just click the donate link on our website to learn more.
+1720.743,1722.724,All donations are tax deductible for U.S.
+1722.764,1723.344,taxpayers.
+1724.325,1725.745,"You can support the show for free, too."
+1726.506,1728.186,Write a review or recommend it to your friends.
+1728.406,1729.207,Every little bit helps.
+1729.767,1732.468,Click support the show link on our website to see some suggestions.
+1733.228,1741.291," To subscribe to this show, point your podcatching software at AstronomyCast.com slash podcast dot xml, or subscribe directly from iTunes."
+1742.091,1744.972,"This episode was edited by Pamela, with additional writing by Fraser."
+1745.473,1747.073,Music is provided by Travis Searle.
+1747.533,1749.574,Our web assistant is Rebecca Bemrose-Fetter.
+1750.134,1756.697,"AstronomyCast is produced at Southern Illinois University, Edwardsville, with generous support from Universe Today."

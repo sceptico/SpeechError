@@ -1,0 +1,365 @@
+start,end,text
+0.69,7.676," This episode of Astronomy Cast is brought to you by Swinburne Astronomy Online, the world's longest running online astronomy degree program."
+8.137,12.861,Visit astronomy.swin.edu.au for more information.
+18.291,22.874," Astronomy Cast, Episode Eighty-Four for Monday, April Fourteenth, Two Thousand Eight."
+23.495,25.096,Getting Around the Solar System.
+25.777,32.602,"Welcome to Astronomy Cast, our weekly facts-based journey through the cosmos, where we help you understand not only what we know, but how we know what we know."
+33.142,40.728,"My name is Fraser Cain, I'm the publisher of Universe Today, and with me is Dr. Pamela Gay, a professor at Southern Illinois University, Edwardsville."
+41.168,41.628,Hey Pamela.
+42.009,43.27,"Hey Fraser, how's it going?"
+43.85,44.791,"Good, how's Europe?"
+45.852,49.055," I don't know yet, because we're cheating and recording this before I leave."
+49.595,50.716,"Oh, this joke never gets old."
+53.738,55.72,"So once again, we've booked a bunch in advance."
+55.8,58.482,"And so I think, where are you right now, then?"
+59.923,65.146,"Right now, I am probably over the Atlantic Ocean on my way home."
+65.887,66.167,OK.
+66.768,72.432,Then you had a good time at the pub with the mini astronomy cast to meet up in the UK.
+72.652,73.513,"Yes, exactly."
+74.105,76.547," All right, so let's get on to this week's show."
+77.268,82.192,"Now, have you ever wondered what it takes to get a spacecraft off the Earth and into space?"
+83.052,84.193,And what are orbits?
+84.233,84.874,How does that work?
+84.894,87.516,What's the difference between a polar and an equatorial orbit?
+87.916,93.961,And how do managers at NASA actually navigate a spacecraft to another planet half a solar system away?
+94.482,96.023,And how does it use gravity assists?
+97.244,99.886,And how do they get the spacecraft into orbit around another planet?
+100.046,100.747,And how do they land?
+101.44,103.041," All right, so many questions."
+103.301,103.541,Okay.
+104.462,115.008,"So let's so this week, the plan is, we're going to talk about every way that spacecraft get from the Earth out into space, and do their job."
+115.668,117.129,So let's bring it right back home.
+117.43,123.113,And let's start with what are the mechanics of actually getting something off of the Earth?
+123.763,127.285," Well, you need to actually fire more than just once."
+127.585,137.731,There's this fascinating notion that if you give a rocket a big enough burst of energy that it will fly off into space and happily orbit.
+138.532,149.579,"But when you look at what NASA rockets actually do, they fire and fire and fire and fire and fire and fire and fire and keep firing and the rocket makes it into space and they keep firing and the rocket's in space and then they shut off."
+151.2,151.36,And
+152.341,155.284, to our network television-trained mind.
+155.564,166.953,"It looks like the rocket takes off perpendicular to the Earth, flies straight into space, and the engines turn off, and as soon as they turn off, the rocket starts going around the planet."
+167.213,168.815,And that's not actually what happens.
+169.537,178.881, you actually take off and you fling yourself in the direction of the Earth's rotation.
+179.662,192.767,"So you're adding your velocity to the velocity that you already get from the planet's motion, and you take off such that you're heading on an arc into space."
+194.389,207.59," you angle yourself such that once you get about where you want to be, you fire the rockets so that your orbit starts you going in roughly a circle around the planet."
+208.663,209.464, I think that's a misnomer.
+209.484,214.467,"As you said, people imagine a rocket ship taking off and going straight up and out into space."
+214.967,216.168,And that never happens.
+216.308,222.312,The rocket takes off and almost immediately starts to angle itself downrange.
+224.694,233.625," so that it's almost aiming, so it's almost flying parallel to the Earth's surface, and going faster and faster and faster and getting higher and higher altitude."
+234.026,244.018,"But in the end, it's, it's more that the rocket is going parallel to the Earth at at the thousand kilometers per hour, not straight up at the thousand kilometers per hour."
+244.358,256.986," And this is why with the space tourists, with those flights, like the one with the Spaceship One, which went up to a hundred kilometers and came back down, it went straight up."
+258.155,261.156, reached the limits of space and then came back down.
+261.556,263.917,"And people said, Oh, well, then we're really close to getting into orbit."
+263.937,274.16,"But in fact, it's a tremendously different amount of, of energy and velocity required to be going at thousand kilometers sideways around the earth."
+274.881,287.345,"And the fact is that if we didn't have that extra firing that extra maneuver, once you get up to the top of your arc, that sets you going sideways, then you just fall straight back down."
+288.45,294.492," Orbits are shaped like ellipses, and they're perfectly happy to have one end of that ellipse hit the planet."
+295.492,316.537,"And to take an orbit and make it from one that goes up past the top of the atmosphere and comes back down and crashes onto the planet, you have to fire the engines up at the top of the arc, up at the top of the atmosphere, beyond the atmosphere, and set you moving sideways."
+317.785,327.527," And it's that extra step, that firing at the top, that allows you to keep going in a circle around the planet instead of returning back to the surface more violently than you might have wished for."
+328.207,333.648,Now the other thing you mentioned was the fact that the rocket is thrusting and thrusting and thrusting.
+334.068,337.369,And why don't they just put one great big boom and get out into space?
+337.709,340.29,Well that might be a bit devastating for the astronauts.
+341.45,346.311,It comes down to how much acceleration can any one thing handle.
+347.21,365.302," If I wanted to, I could, and I had the technology, which I don't think we have right now, but if I wanted to, and we did have the technology, I could accelerate a rocket over the course of perhaps thirty thousand feet such that it had all the velocity it needed to get to orbit."
+365.322,376.669,"It would still have to do an extra firing once it got up to the correct altitude to get it going sideways, but I could get it going fast enough that it would get to that highest point, but I'd have to accelerate so fast"
+377.315,382.857, that it would shake the tar out of the spacecraft and probably kill the astronauts by accelerating too fast.
+383.237,395.04,"Well, that's what happens when a spacecraft is coming back through the atmosphere, it's crashing into the it's hitting this the solid atmosphere at huge velocity, and it's heating up."
+395.36,403.322,"So if you were actually to try and accelerate it to that speed right away, I'm sure you would just vaporize it in the atmosphere, it would be bad."
+403.622,406.623,"So instead, we do constant acceleration,"
+407.846,409.878," And by firing constantly, you..."
+411.283,416.805, don't have to get going to a velocity that will carry you through the atmosphere.
+416.885,419.106,You can keep pushing yourself through the atmosphere.
+419.847,428.69,"One way to think of this is if you've ever ridden a bike, you can get your bike going down the hill so fast that you don't have to pedal up the next hill."
+429.351,435.313,But you might have to get yourself going so fast that you're a bit scared of what might happen if you hit a rock.
+436.113,439.295,"But if instead you go down that first hill a little bit more slowly,"
+439.855,445.24, you can pedal up the next hill and you never have to get going as fast and you'll still get to the top of the next hill.
+446.2,462.754,"If we gave the rocket enough energy close to the planet Earth to carry it all the way up through the atmosphere, it would have to be going frighteningly fast and it would slow down and slow down and slow down as it goes through the atmosphere and encounters drag until it eventually pops out in orbit."
+463.815,468.899,"By instead accelerating all the way through the atmosphere, it's just a little bit friendlier to everyone."
+469.318,480.566," And so with that rocket that's firing constantly, the bulk of the energy that's coming out of the back of the rocket is just counteracting its pull back from the force of gravity."
+481.126,488.031,"You know, if you take the amount of energy required to hold the rocket steady in air, in mid-air,"
+489.352,492.134, that would be most of the energy that's coming out of the back of the rocket.
+492.154,495.476,And then you're left with just a little bit of extra force.
+495.576,496.957,And that's what pushes it up.
+497.017,504.342,"And as the rocket is going faster and faster and faster, more and more of that of that energy that's coming out of the rocket is used to accelerate it."
+504.662,516.33,"And that's why when you see like the space shuttle, or especially with the old the Saturn five, sitting on the pad, when they first turn it on, it barely seems to move and then it slowly inches up."
+516.71,518.792,"But later on, it's going faster and faster."
+519.712,520.393, much faster.
+521.314,533.803,"The acceleration is increasing, so... Well, and one of the other things that's happening is you start off and the poor, innocent engines have to not only pick up the spacecraft, but they have to pick up all of the fuel."
+534.484,537.246,"And the higher up you get, the less fuel you're trying to move."
+538.132,543.698," And so you're firing engines to move smaller and smaller masses as you go, and that helps as well."
+544.559,548.083,And all these things build together to allow us to get things into orbit.
+549.024,552.548,"And once we're up there, we fire again so that we stay in orbit."
+552.868,554.37,"Okay, so let's talk about some orbits then."
+554.47,558.875,So what are the different kinds of orbits that a spacecraft might want to get into?
+560.009,568.255," Well, the most common orbit for human beings is your standard run-of-the-mill low Earth kind of sort of equatorial orbit."
+569.035,576.1,"These are orbits that pass over Cape Canaveral, that pass over the Soviet launch facilities."
+577.211,585.374," And they're inclined to the equator, but most of the time, the International Space Station and the space shuttle stay over."
+586.255,587.795,Hubble is there.
+587.915,588.656,And Hubble too.
+589.616,599.12,"They're staying over the equator, they're crisscrossing, they're passing over Florida, they're passing over mid-America, they're passing over the plains of Russia."
+603.041,612.251," And these are just nice happy little orbits about three hundred miles up that take about ninety minutes, hundred minutes to go round and round and round."
+612.912,619.939,And what's neat about these inclined orbits is every orbit they pass over a slightly different part of the planet.
+620.54,622.783,So you have an orbit and you can imagine
+623.982,631.026," a hula hoop going around the planet where it crosses the equator in two places, and then it has a high point and a low point."
+631.587,643.174,"Well, as the Earth rotates inside that hula hoop, and in fact, as the hula hoop itself slowly rotates, that high point is over a different point on the planet every moment."
+643.874,652.82,"And that allows different parts of the planet to have the International Space Station straight overhead at different times, which is cool for amateur observers who like to go out and look at these things."
+653.186,657.709," Now you mentioned that, you know, a lot of stuff launches near the equator."
+657.729,661.192,They get a boost from the rotation of the planet there?
+662.053,663.574,That's exactly correct.
+663.734,669.538,"Depending on where you are on the planet, you're going around the center of the planet at a slightly different speed."
+670.219,675.383,The entire surface of the planet rotates once every twenty-four hours relative to the Sun.
+676.363,682.448,"And if you're at the equator, you have to travel a much larger distance than you have to travel if you're up near the pole."
+683.424,691.949," Well, that extra velocity that you have by being near the equator helps throw you into orbit and gives you an extra boost as you're taking off."
+692.069,703.335,"So Florida is a great place, if you want to stay in the continental United States, to stick a space facility because it's pretty much as close to the equator as you can get in our country."
+703.663,705.624," Well, I think Sea Launch has the best one."
+706.405,715.571,"They take a boat and an oil rig down to the equator in the ocean, and then they launch rockets right from the equator."
+716.252,718.653,"Now, let's compare that with the polar orbits."
+718.673,719.334,How is that different?
+720.165,737.111," Well, with a polar orbit, you launch yourself into space, and not only when you get into orbit do you give yourself a boost sideways to get yourself staying in orbit around the planet, but you also do an extra transfer so that you're going over the North Pole and over the South Pole."
+737.631,740.392,And there's a lot of different reasons to do this.
+741.109,742.811, different type of orbit.
+743.011,755.787,"First of all, with a polar orbit you're constantly passing over different parts of the planet and so this allows you to slowly map the entire surface of the planet as you go around and as"
+756.267,758.929, the planet rotates beneath it.
+759.009,760.951,You can still have a low Earth orbit.
+762.051,770.217,"In general, we don't have orbits that go exactly over the North Pole and exactly over the South Pole, just because that starts to get a little bit complicated."
+770.898,773.099,Our Earth isn't actually a perfect sphere.
+773.179,774.56,"We wish it was, but it's not."
+775.601,779.204, It's rotation causes it to bulge out a little bit at the equator.
+779.744,780.945,And this affects orbits.
+781.246,786.63,And it's just a little bit simpler to have something that's tilted slightly relative to north and south.
+787.47,793.855,It tends to get tilted naturally by this extra torque from going over the equatorial bulge.
+794.135,799.059,"But you don't get the gravity, you don't get the boost from the Earth's equator, right?"
+799.139,802.402,"In this case, you just have to get into space all on your own."
+803.859,814.97," Well, once you're in space, you can get the extra boost to get into space from launching near the equator, but then you have to tilt your orbit once you're up there."
+815.05,819.934,You have to change the direction that you're moving forward.
+820.315,821.316,Think of it as
+821.96,828.401, You get your car moving and then you break the front left wheel.
+829.221,832.722,Now there's no way in a healthy car to break only the front left wheel.
+833.282,841.283,"But you can imagine in an unhealthy car that if you break only the front left wheel, it's going to cause the entire car to keep moving but change direction."
+842.764,847.385,"Well, you get that extra velocity, you get that motion by launching at the equator."
+848.025,850.045,"And then once you're in orbit,"
+850.612,858.994, you either break or you accelerate to tilt the direction that you're headed in until you get going in the polar orbit that you want.
+860.154,863.774,"All right, and I guess the last orbit that really matters is a geosynchronous orbit."
+864.235,867.275,"So with a geosynchronous orbit, you're up really high."
+867.315,872.276,You're actually up thirty five thousand nine hundred and seventy kilometers.
+873.396,877.337,"At this altitude, you are orbiting"
+877.907,881.51," Instead of every ninety minutes, you're orbiting every twenty-four hours."
+881.971,888.897,And what's cool with this type of an orbit is you stay over the exact same part of the planet all the time.
+889.458,895.263,This is useful if you're a television station because you can stay over the people that you're trying to communicate with.
+895.623,902.79,It's useful if you're a weather satellite that's tied to a specific part of the country because you stay over the part of the country you're trying to take
+903.43,906.152, images up that you're trying to keep track of.
+906.392,908.214,"Well, is there going to be a tornado?"
+909.615,923.164,"So geosynchronous orbits, these are one of the most prized orbits for communication satellites and weather satellites, and we're actually running out of space to put things in geosynchronous orbit because it's one of the first places to fill up."
+924.124,927.727,Now one of the problems with geosynchronous is you're so high up that
+928.283,930.805, that you can't take detailed surface images.
+930.925,939.072,"So if we really want to do like Google Maps style images, that is what's called a sun synchronous orbit, but we'll get to that one in a minute."
+940.153,947.499,The other problem with geosynchronous orbits is you have to stay above the equator if you want to stay over the same part of the planet.
+948.319,954.865,"If you go up to thirty five thousand nine hundred seventy kilometers and you get there such that you're over Boston,"
+955.612,963.558," Well, you're going to be over Boston on one part of your orbit, and then you're going to cross down over the equator, and then you're going to end up over the southern hemisphere somewhere."
+964.279,975.208,"You're still orbiting every twenty-four hours, but because your orbit is inclined, where you are on a north-south line, that's going to change constantly."
+976.269,982.974,"And so it's like you're tracing this line up and down the same part of the planet on the globe, but"
+983.769,985.69, that's not always useful.
+985.83,987.511,"In fact, it's rarely useful."
+988.312,1000.779,"And if you're a poor individual living in Northern Canada, in Siberia, in Norway, in Finland, and you need a communications satellite, you can't see one over the equator real well."
+1001.899,1004.641,So another type of orbit that we use is
+1005.806,1007.927, and I may be pronouncing that wrong.
+1007.988,1019.298,It's a Russian word because the Soviets were the ones who had to come up with this orbit because most of their country is far enough north that geosynchronous communication satellites aren't useful to them.
+1020.218,1028.646,So modification on the geosynchronous orbit is this orbit that for half the orbit when it's at its furthest point from the planet
+1029.306,1032.807, is going along at the same rate as a geosynchronous satellite.
+1032.827,1045.771,"So it's basically staying over the same part of the planet, staying over the same part of the planet, and then it accelerates, and then it zips really close into the planet over a different point, zips back out, and lands over where it started originally."
+1046.011,1056.754,"So with this modification of a geosynchronous, one that is inclined sixty-three point four degrees, so it's getting up to the high northern or high southern latitudes,"
+1057.689,1065.09," You have a twelve hour orbital period, but for most of that twelve hours, it stays over the exact same point in the globe."
+1065.771,1082.954,"What's cool is if you have three satellites in this orbit, one of them, if you space them out correctly, will always be over the part of the planet you're interested in communicating with, so you can provide cell phone signals, you can provide television, you can provide weather imaging for people who live up near the poles."
+1084.454,1086.795," As we said, we're talking about getting around the solar system."
+1086.875,1092.898,"So let's say we've launched some kind of robotic explorer that's going to go to the moon, for example."
+1093.898,1094.338,"No, you know what?"
+1094.358,1095.399,Let's go with the most complicated.
+1095.419,1096.299,Let's go with Messenger.
+1096.319,1098.88,You really don't like me.
+1099.52,1102.381,"Yeah, which is the mission to Mercury."
+1102.602,1105.163,It launched from Earth.
+1105.203,1107.163,I assume it went into an orbit around the Earth.
+1107.384,1108.344,And then what?
+1108.564,1111.825," Well, it didn't do what we had originally planned."
+1112.485,1120.848,"One of the problems with really complicated orbits is you have to figure out, OK, if this planet is here and this planet is here and this planet is here, we can use these gravities."
+1120.908,1124.329,And it's like playing a really complicated game of pool.
+1124.889,1130.571,"As long as everything's in the right place, everything ricochets correctly, you end up getting all the balls in the holes."
+1131.331,1136.073,"But if one thing isn't where you expect it to be, you have to choose an entirely different shot."
+1136.733,1139.416," Well, with MESSENGER, they missed the intended launch window."
+1140.216,1150.266,"So they ended up launching, and they went into this orbit that carried this satellite that was destined for Mercury out past the Earth's orbit."
+1151.095,1156.561, So it took off and it headed on an elliptical orbit that carried it beyond where the Earth would ever go.
+1157.121,1158.663,And then it got out there and went too far.
+1158.823,1162.087,And then it came back in and it came inside Earth's orbit.
+1162.287,1173.579,"And then it ended up encountering the Earth again, spiraling, slowing down, took some images of the Earth, and then spiraled in towards the Sun after doing some braking maneuvers."
+1174.625,1182.671," went past Venus, went out past Venus's orbit, came back in, and then it spiraled in."
+1182.871,1189.076,"And it's this weird circles getting smaller and smaller and smaller, but never really being circles."
+1189.156,1201.266,"They're ellipses, and the entire system rotates and shrinks, rotates and shrinks, rotates and shrinks, as it spirals in, getting braked by different planets, taking images as it goes."
+1202.58,1215.805," And in this complex, spiraling set of shrinking ellipses, they ended up adding two years to how long it took to get to Mercury, all because the planets weren't properly aligned."
+1215.825,1217.826,"Okay, I think that was too complicated."
+1218.166,1218.446,Yes.
+1218.686,1221.468,So let's pick a simpler example.
+1222.088,1227.51,"Okay, so let's say that we're going to go from Earth to Mars."
+1228.11,1228.33,Yes.
+1228.63,1229.771,How does that work?
+1230.697,1248.613," That's actually one of the coolest orbits because you time it just right so that when you look at a picture of the system, where Earth is when the mission takes off is exactly across the sun from where Mars is when the mission gets there."
+1248.813,1253.638,So what you do is you take a satellite and you put it in an elliptical orbit
+1254.295,1264.719," where the point where the object is closest to the Sun is where the Earth is located, and the point where the object is furthest from the Sun is where Mars is located."
+1265.159,1272.241,"It's a nice, friendly, low-energy type of transfer called a Hohmann transfer, low-energy maneuver."
+1272.722,1273.762,"The way orbits work,"
+1274.292,1281.916," When you're closest to whatever the primary mass in the system is, in this case the sun, you're moving the fastest."
+1282.257,1284.958,"When you're furthest from that object, you're going the slowest."
+1285.639,1289.761,"When you're on a circular orbit, you stay at the same velocity all the time."
+1290.081,1293.363,"When you're on an elliptical orbit, velocities are constantly changing."
+1293.643,1296.625,And you can have orbits that cross
+1297.335,1301.956," the Earth and Mars orbit, you can have orbits across Earth and Jupiter's orbit."
+1302.236,1311.158,"And the easiest way to get yourself from one orbit to another is to put yourself first in a nice, friendly, circular orbit around, say, Earth."
+1311.998,1319.38,"And then when you're pointed in the right direction, you fire your engines so that you're going the velocity that's necessary"
+1320.123,1324.788, to be on the elliptical orbit that intersects the orbit of whatever you're trying to get to.
+1324.988,1334.518,Now the trick is timing this just right so that the object you're trying to get to is at that point in its orbit when you get to its orbit.
+1335.64,1347.791," I've seen animations of this, and you see the spacecraft leave Earth, leave the Earth orbit and move into that elliptical orbit, and it doesn't look like it's going to get to Mars at all."
+1348.532,1356.939,"But then the, I guess the orbit of Earth with the spacecraft catches up to the orbit of Mars and it's a bullseye."
+1357.705,1360.567, And this is where launch windows are so important.
+1360.647,1365.729,"If you miss a launch window, you really can't catch back up to the planet."
+1366.79,1368.911,It ends up requiring far too much energy.
+1369.331,1376.715,So we have this narrow window of time when the Earth is exactly where it needs to be to get to Mars when it's where it needs to be in its orbit.
+1377.015,1383.679,"And as with all orbital transfers, it's all about saying, okay, let me change my velocity"
+1384.178,1388.908, perpendicular to what I'm going around now to get to what I want to be going around later.
+1389.542,1393.523," Now, you mentioned that this is a low energy orbit."
+1394.083,1399.664,So this is the way to get from Earth to Mars with the least amount of energy.
+1400.524,1411.707,"I mean, I'm guessing that if you just wanted to fire your thrusters nonstop, or you had some kind of really powerful nuclear rocket, you could get there in more of a straight line."
+1411.747,1416.248,You could just sort of put Mars in your crosshairs and keep firing and you'd get there.
+1416.601,1418.803, That would require a lot of energy.
+1419.043,1420.124,"Right, and a shorter time."
+1420.224,1431.393,"And so I guess the payoff or the balance is that with the low energy transfer, it's the lowest amount of energy required to get from Earth to Mars."
+1431.853,1438.158,"There are higher energy orbits you could use, but those might be not even possible or too expensive."
+1438.278,1442.021,And one of the neat things about doing orbits like this
+1442.958,1444.899, is they work in the opposite direction as well.
+1445.079,1453.883,"If you want to get from Mars back to Earth, you put yourself in orbit around Mars, and then you slow yourself down."
+1454.703,1458.945,And that slowing you down sends you on a path back to Earth.
+1459.565,1463.907,Now we've got the some of the landers that have gone from Earth to Mars.
+1464.367,1466.388,How do they actually land?
+1466.448,1469.109,Or how do they even get into orbit around Mars in the first place?
+1469.568,1480.036," Well, once they get to Mars, they're actually not going the right speed to stay there unless they do some maneuvering to change their velocity."
+1480.057,1482.158,And we change velocities in a number of different ways.
+1482.198,1484.84,One of the really cool ways is through aerobraking.
+1485.101,1489.524,And this is where you use an object's atmosphere to slow yourself down.
+1489.684,1491.526,"So as you go through the atmosphere,"
+1492.256,1501.765," all the particles hitting your spacecraft, slow your spacecraft down, and you can get whatever velocity you need as long as you started with a higher velocity."
+1502.045,1508.952,You can also use gravitational assists to speed yourself up if you're going not quite the right speed by going too slowly.
+1509.38,1512.322," Well, why don't we talk about the gravitational system in one more second?"
+1512.962,1521.687,"But I see with the arrow breaking, it's like you're dipping into the atmosphere, you know, banging into a little bit of the atmosphere, but then you're getting back out again."
+1521.707,1523.287,So it's not like you're crashing.
+1524.248,1524.468,Right?
+1524.508,1531.812,"You're, you're just slowing, you're skimming and you're slowly scraping against the atmosphere, time after time until you're in an orbit."
+1532.533,1537.036, It's like watching a water plane do touch-and-goes.
+1537.076,1540.818,"They come in, glide across the surface, and then skip back off into the air."
+1541.318,1547.121,"Well, in this case, it's a satellite skipping into the atmosphere and then skipping back off after slowing down a little bit."
+1547.901,1550.303,And if a planet doesn't have an atmosphere?
+1551.663,1553.264,Then it gets a little bit more complicated.
+1553.324,1558.227,Then you probably end up having to fire an engine or insert yourself.
+1559.047,1560.048,If you insert yourself
+1560.566,1565.449," In the opposite direction, instead of gravitational assist, you have gravitational braking."
+1566.25,1568.611,It's all about what direction you're going as well.
+1569.272,1575.456,"Now we talked about gravitational assist in a question show, but why don't we bring that up again."
+1575.476,1585.803,"That's the process where spacecraft use planets to increase their speed so that they can get to, I guess, more distant goals faster."
+1586.283,1588.744,"So New Horizons, for example, which is on its way to Pluto."
+1589.907,1594.371, did a gravitational assist with Jupiter to increase its velocity.
+1594.452,1595.573,So what's the process here?
+1595.653,1598.676,"Because as we had in the question show, how is it possible?"
+1598.976,1603.901,It makes sense for a spacecraft getting pulled into the gravity well of a planet like Jupiter to speed up.
+1604.321,1611.088,"But then as it goes back out of the gravity well, it should slow down the exact same amount just like going down a hill and then coming back up again."
+1611.468,1613.349, Let's return to our bicycle analogy.
+1613.709,1618.31,Imagine that you're going down a road that has a big dip in it.
+1618.55,1622.291,"You're plugging along, you're going a constant thirty miles per hour."
+1622.572,1626.193,"That's a little bit insane on a bike, but let's imagine because it's a nice round number."
+1626.553,1633.515,"If you have a perfectly symmetric dip where you go down and you come back up and all friction is exactly the same,"
+1634.055,1639.119," you're going to accelerate as you go down into that hill, and you're going to slow down as you come back out of that hill."
+1639.98,1644.743,"And you should, if you go into it at thirty miles per hour, you should come out of it at thirty miles per hour."
+1645.024,1649.247,Now imagine that somehow that dip
+1649.947,1651.087, is moving forward.
+1651.407,1657.209,"And it's moving forward not quite as fast as you are, but it's still moving forward."
+1657.429,1668.891,"As it moves forward, what ends up happening is you end up spending more time going into the dip because the bottom of the dip keeps going forward and it essentially stretches out the downhill part."
+1669.652,1673.252,And so you're accelerating downhill for a much longer period of time.
+1673.973,1675.493,"But then as you come back out of it,"
+1676.755,1678.859, you're spending less time going up the hill.
+1678.999,1685.371,"So altogether, you spent more time getting accelerated downhill than you spent getting slowed down going uphill."
+1685.832,1688.958,So you end up going faster than that original thirty miles per hour.
+1689.75,1689.91, Right.
+1689.93,1696.913,"And I think the way we tackled it was that it's true, you know, as you're going to Jupiter, that part does cancel out, you get pulled into Jupiter."
+1696.973,1701.755,"And then as you move away from Jupiter, you you slow back down again, because Jupiter is pulling on you."
+1701.795,1706.477,"But the point is, is that you match Jupiter's speed in its orbit."
+1706.777,1708.397,And that's where the bonus comes from.
+1708.997,1712.319,"So it's, it's all about both of you are moving."
+1712.639,1715.44,"And if it's moving forward, and you're moving forward"
+1715.914,1719.8, It's velocity forward gets helped to add push to you.
+1720.0,1727.03,"Now, if you're going in the opposite direction, you end up spending a lot more time getting slowed down than you end up getting sped up."
+1727.29,1731.256,So you can use a gravity assist to slow yourself down as well.
+1731.456,1732.698,It's all about directions.
+1733.214,1748.866," And so that's one of the techniques that they can use to go into orbit around a planet is they'll come in and use successive gravity, reverse gravity assist, gravity brakes to get themselves into orbit."
+1749.006,1752.649,And it's all about matching the angles and slowing yourself down.
+1753.29,1756.692,"Okay, so the last part of this puzzle then is how do they land?"
+1757.553,1761.476,Landing is one of the more complicated things we've had to figure out how to do.
+1762.321,1763.063, landing safely.
+1763.444,1765.89,"Yes, it's easy to crash things."
+1765.95,1767.855,We've been doing that for a long time.
+1768.154,1771.437," Well, landing, you have to somehow shed velocity."
+1771.657,1773.638,"When you have an atmosphere, it's fairly easy."
+1773.678,1777.121,"You go through the atmosphere, and the atmosphere wants to slow you down."
+1777.301,1782.205,"It wants to burn you up, actually, but if you avoid the burning up part, it slows you down."
+1782.465,1794.655,"Mars, the atmosphere's a little bit thin, so it's usually this crazy combination of, we're going to fire rockets to slow us down, then we're going to launch parachutes to slow us down some more, and let's add some airbags."
+1795.205,1796.386, maybe bounce a few times.
+1796.786,1802.248,"If you have no atmosphere, like when we land on the moon, there's a lot of rocket firing going on."
+1802.449,1813.934,"So just as you can use a rocket to lift you up and take you off of the planet, you can use a smaller rocket to slow you down as you come in for a landing."
+1814.935,1815.375,If you've
+1816.184,1819.87, ever seen one of those jet packs that they have at like Disney World or something?
+1820.511,1827.842,The guy fires the rocket a lot to take up over the magic castle and then the rockets are firing less as he comes in for a landing.
+1828.062,1831.327,So they use rockets first to slow themselves down
+1831.867,1845.184," and basically put themselves on a ballistic crashing into the surface of the planet, the moon, the object, orbit, and then just before they're getting ready to crash violently, they fire extra rockets to slow them down even more."
+1845.725,1847.127,It's very fuel intensive.
+1847.387,1849.028," Right, and it's that whole process in reverse."
+1849.328,1861.076,"You start out in an orbit, moving very quickly around the object, and then you fire in the opposite direction that you're orbiting, and that drops you out of orbit, down towards the surface, because you're slowing down."
+1861.136,1867.94,"You're no longer matching your outbound speed with your inbound speed, so you're starting to slow down."
+1868.16,1876.226,"But if you even look at the video of the Apollo landings, you could see the Moon's surface moving under them very quickly, because there's still"
+1877.166,1879.087, on an orbit.
+1880.327,1885.549,It's not until the very last few thousand meters that they are able to straighten out.
+1885.589,1886.85,So they're coming straight down.
+1887.31,1890.151,"So they don't, you know, scrape along the surface of the moon."
+1890.351,1892.172,Your motion is always an ellipse.
+1893.152,1902.218," If you slow yourself down at one point, then you're just moving the other one hundred and eighty degrees around the orbit point closer to the surface."
+1902.899,1905.681,"And if you move it close enough to the surface, it's inside the planet."
+1906.201,1909.043,And your orbit takes you to the surface of the planet.
+1909.622,1915.764," And I guess, to put this all together, spacecraft controllers will use all of these techniques."
+1916.204,1928.147,"They will figure out which kind of orbit to launch a spacecraft, they'll be able to use a combination of gravity assists and orbital transfers to move a spacecraft around the Solar System from"
+1928.627,1933.752," from planet to planet, or to get speed boosts, or to go past objects that they want to image."
+1934.192,1944.241,"And then, if they want to go into orbit, there's a process in reverse, either through gravity breaking, or through firing rockets, or using the atmosphere."
+1944.421,1947.404,And every one of these missions are very complicated.
+1947.424,1951.848,They have to do a lot of work to figure out all of the mathematics involved.
+1952.268,1957.153, And I think the amazing part whenever I see these missions is how close they always get them.
+1957.293,1965.361,"It's amazing how, when you think about the enormous distances involved, they're able to get these spacecraft within their tolerances that they were expecting."
+1965.501,1966.802,So they get right on target.
+1966.822,1967.283,It's great.
+1968.163,1974.207, It's really amazing and it all comes down to always carrying a little bit extra fuel just in case you need it.
+1974.307,1976.948,"Right, in case you need to make one last correction."
+1977.188,1988.454,"Great, okay, well I think that covers, so now you know and understand how spacecraft get off the Earth, into orbit, around the solar system, and land on other worlds."
+1988.954,1989.535,"Well thanks, Pamela."
+1990.055,1991.176,"It's been my pleasure, Fraser."
+1991.196,1992.316,"All right, we'll talk to you next week."
+1992.756,1993.617,"Okay, bye-bye."
+1995.182,1998.865," This has been AstronomyCast, a weekly, facts-based journey through the cosmos."
+1999.686,2003.369,Show notes and transcripts for every episode are available on our website.
+2003.889,2006.291,Check it out at AstronomyCast.com.
+2007.052,2011.555,"You can send us any comments, questions, or feedback to info at AstronomyCast.com."
+2012.016,2013.016,We read every email.
+2013.777,2018.501, The show is a non-profit educational resource provided by Fraser Cain and Dr. Pamela Gay.
+2019.081,2021.923,We are supported through the kind donations of listeners like you.
+2022.704,2025.486,"If you enjoy Astronomy Cast, why not give us a donation?"
+2026.187,2028.929,"It helps us pay for bandwidth, transcripts, and show notes."
+2029.509,2031.391,Just click the donate link on the website.
+2032.231,2034.333,All donations are tax deductible for U.S.
+2034.393,2034.953,taxpayers.
+2035.794,2037.435," You can support the show for free, too."
+2037.936,2039.897,Write a review or recommend it to your friends.
+2040.537,2041.398,Every little bit helps.
+2042.158,2045.06,Click support the show on our website to see some suggestions.
+2045.881,2054.667,"To subscribe to the show, point your podcatching software at astronomycast.com slash podcast dot xml or subscribe directly from iTunes."
+2055.367,2057.011, Music is provided by Travis Searle.
+2057.492,2059.275,This show was edited by Preston Gibson.
+2059.896,2065.608,Astronomy Cast is produced at Southern Illinois University Edwardsville with generous support from Universe Today.
