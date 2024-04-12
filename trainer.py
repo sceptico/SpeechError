@@ -38,13 +38,18 @@ def main():
     )
     logger.info(f"Data loaded from {DATA_PATH}")
 
+    # Print and check if the recordings/supervisions are loaded correctly
     print(data_loader.data, '\n')
     print(data_loader.recordings, '\n')
     print(data_loader.supervisions, '\n')
 
     cuts = data_loader._cut_sets
     print(cuts.describe(), '\n')
+    
+    # Cut with a 1 .0s supervision
     print(cuts[66], '\n')
+    
+    # Cut without a supervision
     print(cuts[67], '\n')
 
 
