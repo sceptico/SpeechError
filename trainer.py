@@ -21,7 +21,7 @@ The training script uses the following classes and functions:
 
 
 from util.logger_setup import logger
-from util.DataLoader import DataLoader
+from util.AudioDataLoader import AudioDataLoader
 
 
 DATA_PATH = './dataset/dataset_test.csv'
@@ -30,26 +30,23 @@ RECORDING_DIR = './dataset/audio'
 
 def main():
     # Load the data
-    data_loader = DataLoader(
+    data_loader = AudioDataLoader(
         data_path=DATA_PATH,
         recording_dir=RECORDING_DIR,
         sampling_rate=16000,
         cut_duration=5.0
     )
-    data = data_loader.get_data()
     logger.info(f"Data loaded from {DATA_PATH}")
-    recordings = data_loader.get_recordings()
-    supervisions = data_loader.get_supervisions()
-    cuts = data_loader.get_cut_sets()
 
-    print(data, '\n')
-    print(recordings, '\n')
-    print(supervisions, '\n')
-    print(cuts[0], '\n')
+    print(data_loader.data, '\n')
+    print(data_loader.recordings, '\n')
+    print(data_loader.supervisions, '\n')
+
+    cuts = data_loader._cut_sets
+    print(cuts.describe(), '\n')
+    print(cuts[66], '\n')
+    print(cuts[67], '\n')
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except Exception as e:
-        logger.error(f"An error occurred: {e}")
+    main()
