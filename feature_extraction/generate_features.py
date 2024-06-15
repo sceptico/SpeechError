@@ -4,6 +4,9 @@ import configparser
 from typing import List
 import argparse
 import multiprocessing
+import librosa
+import scipy
+import numpy as np
 
 
 class FeatureExtractor():
@@ -16,6 +19,12 @@ class FeatureExtractor():
 
         Public Methods
         --------------
+
+
+
+        References:
+        -----------
+        - (https://github.com/Kikyo-16/Sound_event_detection/blob/master/feature_extraction/gen_feature.py)
 
         """
         self.config_path = config_path
@@ -61,12 +70,57 @@ class FeatureExtractor():
         self.f_min = int(feature_config.get('f_min', 0))
         self.f_max = int(feature_config.get('f_max', 22050))
         assert self.max > self.min, f"Invalid frequency range: {self.min} to {self.max}"
+        self.output_frames = int(feature_config.get('LEN', 400))
 
+        # Calculate the frame length, window length, and hop length in seconds
         self.win_length_seconds = self.win_length * self.sr
         self.hop_length_seconds = self.hop_length * self.sr
 
     def get_feature(self, input_file: str, output_file: str) -> None:
-        pass
+        """
+        Extract features from an audio file and save them to disk.
+
+        Parameters:
+            input_file (str): Path to the input audio file.
+            output_file (str): Path to save the extracted features.
+
+        Return:
+            None
+        """
+        sampling_rate = self.sr
+        n_fft = self.n_fft  # number of points in the Fast Fourier Transform
+        n_mels = self.n_mels  # number of Mel bands to generate
+        f_min = self.f_min  # minimum frequency
+        f_max = self.f_max  # maximum frequency
+        win_length_seconds = self.win_length_seconds  # window length in seconds
+        hop_length_seconds = self.hop_length_seconds  # hop length in seconds
+        output_frames = self.output_frames  # number of frames to output
+
+        # Load the audio file
+        y, sr = librosa.load(input_file, sr=sampling_rate)
+
+        # Apply Hanning window
+        window = scipy.signal.hann(win_length_seconds, sym=False)
+
+        # Compute the Mel spectrogram
+        mel_basis = librosa.filters.mel(
+            sr=sr, n_fft=n_fft, n_mels=n_mels, fmin=f_min, fmax=f_max)
+        epsilon = np.spacing(1)
+        spectogram = librosa.stft(
+            y + epsilon, n_fft=n_fft, hop_length=hop_length_seconds, win_length=win_length_seconds, window=window)
+        spectogram = np.abs(mel_spectogram)
+        mel_spectogram = np.dot(mel_basis, spectogram)
+        log_mel_spectogram = np.log(mel_spectogram + epsilon)
+
+        feature = np.transpose(log_mel_spectogram)
+
+        # Use 10 seconds of audio as input
+        frame_length = int(sampling_rate * 10 / hop_length_seconds + 1)
+        new_feature = np.zeros((frame_length, feature.shape[1]))
+        if feature.shape[0] < frame_length:
+            new_feature[:feature.shape[0]] = feature
+        else:
+            new_feature = feature[:frame_length]
 
     def get_feature_for_single_list(self, list: List[str], wav_dir: str, feature_dir: str, index: int) -> None:
         """
@@ -94,6 +148,18 @@ class FeatureExtractor():
                     f"Extracting features {index}/{len(list)}: {input_file} already exists")
 
     def get_feature_multiprocessing(self, list: List[str], wav_dir: str, feature_dir: str, n_process: int) -> None:
+        """
+        Extract features for a list of audio files using multiprocessing.
+
+        Parameters:
+            list (list): List of audio files to extract features from.
+            wav_dir (str): Directory containing the audio files.
+            feature_dir (str): Directory to save the extracted features.
+            n_process (int): Number of processes to use for feature extraction.
+
+        Return:
+            None
+        """
         with open(list, 'r') as f:
             wav_list = f.readlines()
 
@@ -104,13 +170,16 @@ class FeatureExtractor():
         for process_index in range(n_process):
             start_index = process_index * file_per_process
             end_index = min((process_index + 1) * file_per_process, len(list))
+
+            # Check if the start index is within the list
             if start_index < len(list) and start_index < end_index:
                 sub_list = wav_list[start_index:end_index]
                 process = multiprocessing.Process(target=self.get_feature_for_single_list, args=(
                     sub_list, wav_dir, feature_dir, process_index + 1))
 
+                # Start the process
                 process.start()
-                print(f"Process {process_index + 1} started")
+                print(f"Process {process_index + 1}/{n_process} started")
 
 
 def extract_feature(wav_list: List[str], wav_dir: str, feature_dir: str, feature_config_path: str, n_process: int) -> None:
@@ -127,6 +196,9 @@ def extract_feature(wav_list: List[str], wav_dir: str, feature_dir: str, feature
     Return:
         None
     """
+    feature_extractor = FeatureExtractor(feature_config_path)
+    feature_extractor.get_feature_multiprocessing(
+        wav_list, wav_dir, feature_dir,  n_process)
 
 
 if __name__ == '__main__':
