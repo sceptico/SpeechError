@@ -46,7 +46,7 @@ def main():
     cuts = data_loader._cut_sets
     print(cuts.describe(), '\n')
     
-    # Cut with a 1 .0s supervision
+    # Cut with a 1.0s supervision
     print(cuts[66], '\n')
     
     # Cut without a supervision

@@ -76,7 +76,7 @@ class FeatureExtractor():
         self.win_length_seconds = self.win_length * self.sr
         self.hop_length_seconds = self.hop_length * self.sr
 
-    def get_feature(self, input_file: str, output_file: str) -> None:
+    def get_feature(self, input_file: str, output_file: str) -> np.ndarray:
         """
         Extract features from an audio file and save them to disk.
 
@@ -85,7 +85,7 @@ class FeatureExtractor():
             output_file (str): Path to save the extracted features.
 
         Return:
-            None
+            feature_output (np.ndarray): Extracted features from the audio file.
         """
         sampling_rate = self.sr
         n_fft = self.n_fft  # number of points in the Fast Fourier Transform
@@ -94,7 +94,7 @@ class FeatureExtractor():
         f_max = self.f_max  # maximum frequency
         win_length_seconds = self.win_length_seconds  # window length in seconds
         hop_length_seconds = self.hop_length_seconds  # hop length in seconds
-        output_frames = self.output_frames  # number of frames to output
+        output_length = self.output_frames  # number of frames to output
 
         # Load the audio file
         y, sr = librosa.load(input_file, sr=sampling_rate)
@@ -116,11 +116,37 @@ class FeatureExtractor():
 
         # Use 10 seconds of audio as input
         frame_length = int(sampling_rate * 10 / hop_length_seconds + 1)
-        new_feature = np.zeros((frame_length, feature.shape[1]))
+        feature_temp = np.zeros((frame_length, feature.shape[1]))
+
         if feature.shape[0] < frame_length:
-            new_feature[:feature.shape[0]] = feature
+            feature_temp[:feature.shape[0]] = feature
+
         else:
-            new_feature = feature[:frame_length]
+            feature_temp = feature[:frame_length]
+
+        feature_output = np.zeros((output_length, feature.shape[1]))
+
+        # When the frame length not matches the output length
+        if not frame_length == output_length:
+
+            # If the frame length is less than the output length, pad and center the feature
+            if frame_length < output_length:
+                start_index = (output_length - frame_length) // 2
+                end_index = output_length - start_index
+                feature_output[start_index:end_index] = feature_temp
+
+            # If the frame length is greater than the output length, crop the feature
+            else:
+                start_index = (frame_length - output_length) // 2
+                end_index = frame_length - start_index
+                feature_output = feature_temp[start_index:end_index]
+
+        else:
+            feature_output = feature_temp
+
+        # Save the extracted features to disk
+        np.save(output_file, feature_output)
+        return feature_output
 
     def get_feature_for_single_list(self, list: List[str], wav_dir: str, feature_dir: str, index: int) -> None:
         """
@@ -139,6 +165,7 @@ class FeatureExtractor():
             input_file = os.path.join(wav_dir, file)
             output_file = os.path.join(feature_dir, file)
             print(f"Extracting features {index}/{len(list)}: {input_file}")
+
             if not os.path.exists(output_file):
                 self.get_feature(input_file, output_file)
                 print(
