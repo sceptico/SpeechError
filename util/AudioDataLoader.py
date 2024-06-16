@@ -1,5 +1,9 @@
 """
 The AudioDataLoader class is used to load the data from the data_path and return the data.
+
+To-do:
+- Add voice detection to cut out audio at beginning and end of podcast
+- Use whisperX transcription timestamps to cut out audio
 """
 
 from .logger_setup import logger
@@ -31,11 +35,11 @@ class AudioDataLoader:
 
     Public Properties
     -----------------
-    - data: Return the loaded data.
-    - audio_files: Return the unique audio files in the data.
-    - recordings: Return the loaded audio data.
-    - supervisions: Return the supervision metadata.
-    - cut_sets: Return the cuts.
+    - data: loaded data.
+    - audio_files: unique audio files in the data.
+    - recordings: loaded audio data.
+    - supervisions: supervision metadata.
+    - cut_sets: cuts.
 
     Dependencies
     ------------
@@ -44,6 +48,8 @@ class AudioDataLoader:
     - [pandas](https://pandas.pydata.org): Library for data manipulation and analysis.
     - [lhotse](https://lhotse.readthedocs.io): Library for working with speech and audio datasets.
     - [typing](https://docs.python.org/3/library/typing.html): Library for type hints.
+    - [numpy](https://numpy.org): Library for numerical computing.
+    - [torch](https://pytorch.org): Library for machine learning.
 
     Lhotse Classes and Functions
     ----------------------------

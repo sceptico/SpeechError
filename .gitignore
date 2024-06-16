@@ -1,8 +1,9 @@
-# .mp3 files
+# audio files
+*.wav
 *.mp3
 
-# features directory
-features/
+# numpy files
+*.npy
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
