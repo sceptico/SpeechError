@@ -267,7 +267,7 @@ class FeatureExtractor():
 
             if not os.path.exists(output_file):
                 self._get_feature(input_file, output_file,
-                                  transcript_file, fixed_length=True)
+                                  transcript_file, fixed_length=False)
                 print(
                     f"Extracting features {index}/{len(list)}: {input_file} completed")
             else:
