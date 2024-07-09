@@ -46,7 +46,7 @@ class FeatureExtractor():
 
         Public Methods
         --------------
-        - get_feature_multiprocessing(list: List[str], wav_dir: str, transcript_dir: str, feature_dir: str, n_process: int) -> None:
+        - generate_feature_multiprocessing(list: List[str], wav_dir: str, transcript_dir: str, feature_dir: str, n_process: int) -> None:
 
         Public Properties
         -----------------
@@ -89,9 +89,9 @@ class FeatureExtractor():
         self.hop_length_seconds = None
 
         # Initialize the feature extraction configuration
-        self._init_extractor_config()
+        self._init_config()
 
-    def _init_extractor_config(self) -> None:
+    def _init_config(self) -> None:
         """
         Initialize the feature extraction configuration file.
 
@@ -119,7 +119,7 @@ class FeatureExtractor():
         self.n_fft = int(feature_config.get('n_fft', 2048))
         self.win_length = float(feature_config.get('win_length', 0.04))
         self.hop_length = float(feature_config.get('hop_length', 0.02))
-        self.sr = int(feature_config.get('sr', 44100))
+        self.sr = int(feature_config.get('sr', 16000))
         self.n_mels = int(feature_config.get('n_mels', 64))
         self.f_min = int(feature_config.get('f_min', 0))
         self.f_max = int(feature_config.get('f_max', 22050))
@@ -185,7 +185,7 @@ class FeatureExtractor():
                     segment, (0, n_fft - len(segment)), mode='constant')
 
             # Apply Hanning window
-            window = scipy.signal.hann(win_length_seconds, sym=False)
+            window = scipy.signal.windows.hann(win_length_seconds, sym=False)
 
             # Compute the Mel spectrogram
             mel_basis = librosa.filters.mel(
@@ -238,24 +238,30 @@ class FeatureExtractor():
 
         return features_list
 
-    def _get_feature_for_single_list(self, list: List[str], wav_dir: str, transcript_dir: str, feature_dir: str, index: int) -> None:
+    def _get_feature_for_single_list(self, list_audio_files: List[str], wav_dir: str, transcript_dir: str, feature_dir: str, index: int, file_per_process: int, wav_list_length: int) -> None:
         """
         Extract features for a list of audio files and save them to disk.
 
         Parameters:
-            list (list): List of audio files to extract features from.
+            list_audio_files (list): List of audio files to extract features from.
             wav_dir (str): Directory containing the audio files.
             transcript_dir (str): Directory containing the transcript files.
             feature_dir (str): Directory to save the extracted features.
             index (int): Index of the list of audio files.
+            file_per_process (int): Number of files per process.
+            wav_list_length (int): Total number of audio files.
 
         Return:
             None
         """
-        for file in list:
+        for sub_list_index, file in enumerate(list_audio_files):
+            index = index * file_per_process + sub_list_index
             input_file = os.path.join(wav_dir, file)
             output_file = os.path.join(feature_dir, file)
-            print(f"Extracting features {index}/{len(list)}: {input_file}")
+            output_file_name_prefix = os.path.basename(
+                output_file).split('.')[0]
+            print(
+                f"Extracting features {index + 1}/{wav_list_length}: {input_file}")
 
             # Find the corresponding transcript file in subdirectory
             transcript_file_name = file.replace('.wav', '.csv')
@@ -265,21 +271,21 @@ class FeatureExtractor():
                 print(f"transcript file not found for {input_file}")
                 continue
 
-            if not os.path.exists(output_file):
+            if not file_exists_with_prefix(feature_dir, output_file_name_prefix):
                 self._get_feature(input_file, output_file,
                                   transcript_file, fixed_length=False)
                 print(
-                    f"Extracting features {index}/{len(list)}: {input_file} completed")
+                    f"Extracting features {index + 1}/{wav_list_length}: {input_file} completed")
             else:
                 print(
-                    f"Extracting features {index}/{len(list)}: {input_file} already exists")
+                    f"Extracting features {index + 1}/{wav_list_length}: {input_file} already exists")
 
-    def get_feature_multiprocessing(self, list: List[str], wav_dir: str, transcript_dir: str, feature_dir: str, n_process: int) -> None:
+    def generate_feature_multiprocessing(self, list_audio_files: List[str], wav_dir: str, transcript_dir: str, feature_dir: str, n_process: int) -> None:
         """
         Extract features for a list of audio files using multiprocessing.
 
         Parameters:
-            list (list): List of audio files to extract features from.
+            list_audio_files (list): List of audio files to extract features from.
             wav_dir (str): Directory containing the audio files.
             transcript_dir (str): Directory containing the transcript files.
             feature_dir (str): Directory to save the extracted features.
@@ -288,26 +294,28 @@ class FeatureExtractor():
         Return:
             None
         """
-        with open(list, 'r') as f:
+        with open(list_audio_files, 'r') as f:
             wav_list = f.readlines()
 
         wav_list = [wav.strip() for wav in wav_list]
 
-        file_per_process = (len(list) + n_process - 1) // n_process
+        file_per_process = (len(wav_list) + n_process - 1) // n_process
 
         for process_index in range(n_process):
             start_index = process_index * file_per_process
-            end_index = min((process_index + 1) * file_per_process, len(list))
+            end_index = min((process_index + 1) *
+                            file_per_process, len(wav_list))
 
             # Check if the start index is within the list
-            if start_index < len(list) and start_index < end_index:
+            if start_index < len(wav_list) and start_index < end_index:
                 sub_list = wav_list[start_index:end_index]
                 process = multiprocessing.Process(target=self._get_feature_for_single_list, args=(
-                    sub_list, wav_dir, transcript_dir, feature_dir, process_index + 1))
+                    sub_list, wav_dir, transcript_dir, feature_dir, process_index, file_per_process, len(wav_list)))
 
                 # Start the process
                 process.start()
-                print(f"Process {process_index + 1}/{n_process} started")
+                print(
+                    f"Process {process_index + 1}/{min(n_process, len(wav_list))} started")
 
     def _find_transcript_file(self, transcript_dir: str, transcript_file_name: str) -> str:
         """
@@ -326,6 +334,13 @@ class FeatureExtractor():
         return None
 
 
+def file_exists_with_prefix(directory, output_file_prefix):
+    for filename in os.listdir(directory):
+        if filename.startswith(output_file_prefix):
+            return True
+    return False
+
+
 def extract_feature(wav_list: List[str], wav_dir: str, transcript_dir: str, feature_dir: str, feature_config_path: str, n_process: int) -> None:
     """
     Generate features for a list of audio files and save them to disk.
@@ -342,7 +357,7 @@ def extract_feature(wav_list: List[str], wav_dir: str, transcript_dir: str, feat
         None
     """
     feature_extractor = FeatureExtractor(feature_config_path)
-    feature_extractor.get_feature_multiprocessing(
+    feature_extractor.generate_feature_multiprocessing(
         wav_list, wav_dir, transcript_dir, feature_dir,  n_process)
 
 
@@ -374,7 +389,8 @@ if __name__ == '__main__':
     paths = [wav_list, wav_dir, transcript_dir, feature_dir, feature_config]
 
     for path in paths:
-        assert os.path.exists(path), f"Path not found: {path}"
+        if not os.path.exists(path):
+            raise FileNotFoundError(f'Path "{path}" not found.')
 
     extract_feature(wav_list, wav_dir, transcript_dir,
                     feature_dir, feature_config, n_process)

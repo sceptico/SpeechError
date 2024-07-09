@@ -8,13 +8,6 @@ FEATURE_CONFIG=code/feature_extraction/feature.cfg
 ANNOTATION_PATH=data/metadata/dataset.csv
 LABEL_INFO_DIR=data/metadata
 
-# Generate features
-if [ ! -d $FEATURE_DIR ]; then
-    mkdir -p $FEATURE_DIR
-fi
-
-python3 code/feature_extraction/generate_features.py --wav_list $WAVE_LIST --wav_dir $WAVE_DIR --transcript_dir $TRANSCRIPT_DIR --feature_dir $FEATURE_DIR --feature_config $FEATURE_CONFIG --n_process $PROCESS_NUM
-
 # Generate labels
 if [ ! -d $LABEL_DIR ]; then
     mkdir -p $LABEL_DIR
