@@ -1,8 +1,10 @@
+
 import os
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
+from tensorflow.keras import backend as K
 from typing import Tuple, List
 
 from Attention import Attention
@@ -58,6 +60,43 @@ def pad_sequences(sequences: List[np.ndarray], maxlen: int) -> np.ndarray:
     return padded_sequences
 
 
+def error_rate(y_true, y_pred):
+    """
+    Custom metric to calculate the error rate (ER).
+
+    Args:
+    - y_true: Ground truth labels.
+    - y_pred: Predicted labels.
+
+    Returns:
+    - Error rate (ER).
+    """
+    # Ensure both tensors are of the same type
+    y_true = K.cast(y_true, 'float32')
+    y_pred = K.cast(y_pred, 'float32')
+
+    # Convert predictions to binary
+    y_pred = K.round(y_pred)
+
+    # Calculate true positives, false positives, false negatives
+    FP = K.sum(K.cast(y_pred, 'int32') - K.cast(y_true * y_pred, 'int32'))
+    FN = K.sum(K.cast(y_true, 'int32') - K.cast(y_true * y_pred, 'int32'))
+
+    # Calculate substitutions (S), deletions (D), and insertions (I)
+    S = K.cast(K.minimum(FN, FP), 'float32')
+    D = K.cast(K.maximum(0, FN - FP), 'float32')
+    I = K.cast(K.maximum(0, FP - FN), 'float32')
+
+    # Calculate total number of active sound events (N)
+    N = K.sum(y_true)
+
+    # Error rate (ER) calculation
+    # Add epsilon to avoid division by zero
+    ER = (S + D + I) / (N + K.epsilon())
+
+    return ER
+
+
 def create_tf_dataset(features: List[np.ndarray], labels: List[np.ndarray], maxlen: int) -> tf.data.Dataset:
     """
     Create a TensorFlow Dataset from the features and labels.
@@ -71,8 +110,10 @@ def create_tf_dataset(features: List[np.ndarray], labels: List[np.ndarray], maxl
     - dataset (tf.data.Dataset): The TensorFlow Dataset.
     """
     features = pad_sequences(features, maxlen)
-    labels = pad_sequences(labels, maxlen)
-    dataset = tf.data.Dataset.from_tensor_slices((features, labels))
+    labels_frame = pad_sequences(labels, maxlen)
+    labels_utt = np.any(labels_frame == 1, axis=1).astype(np.float32)
+    dataset = tf.data.Dataset.from_tensor_slices(
+        (features, (labels_frame, labels_utt)))
     dataset = dataset.shuffle(buffer_size=1000).batch(32)
     return dataset
 
@@ -139,8 +180,8 @@ def create_model(input_shape: Tuple[int, int], num_classes: int) -> keras.Model:
 
     # Define the metrics for each output
     metrics = {
-        "output_layer_frame": ["accuracy"],
-        "output_layer_utt": ["accuracy"],
+        "output_layer_frame": error_rate,
+        "output_layer_utt": None,
     }
 
     model.compile(optimizer='adam', loss=losses,
@@ -175,14 +216,10 @@ if __name__ == "__main__":
     # Show model summary
     model.summary()
 
-    # Test model output types
-    test_input = np.random.rand(1, maxlen, input_shape[1]).astype(np.float32)
-    test_output = model(test_input)
-
-    print("Test model output types:")
-    print("Type of test_output:", type(test_output))
-    print("Length of test_output:", len(test_output))
-    print("Shapes of test_output elements:", [o.shape for o in test_output])
+    # Show model attributes
+    print(f"Losses: {model.loss}")
+    print(f"Metrics: {model.metrics}")
+    print(f"Optimizer: {model.optimizer}")
 
     # Train the model
     model.fit(train_dataset, epochs=10)
