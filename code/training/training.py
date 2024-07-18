@@ -3,156 +3,215 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
-from typing import Tuple, List, Generator
+from typing import Tuple, List
 
-# Define paths
-features_dir = "data/features/"
-labels_dir = "data/labels/"
-
-# Data Generator
+from Attention import Attention
 
 
-def data_generator(features_dir: str, labels_dir: str, batch_size: int, label_padding_value: int = -1) -> Generator[Tuple[np.ndarray, np.ndarray], None, None]:
+def load_data(features_dir: str, labels_dir: str) -> Tuple[List[np.ndarray], List[np.ndarray]]:
     """
-    Generator that yields batches of features and labels.
+    Load .npy files from the specified directories.
 
     Args:
     - features_dir (str): The directory containing the feature files.
     - labels_dir (str): The directory containing the label files.
-    - batch_size (int): The size of the batches to generate.
-    - label_padding_value (int): The padding value for labels.
 
-    Yields:
-    - Tuple[np.ndarray, np.ndarray]: Batch of features and corresponding labels.
+    Returns:
+    - features (List[np.ndarray]): The loaded features.
+    - labels (List[np.ndarray]): The loaded labels.
     """
     features_files = sorted(os.listdir(features_dir))
     labels_files = sorted(os.listdir(labels_dir))
 
-    while True:
-        for start in range(0, len(features_files), batch_size):
-            end = min(start + batch_size, len(features_files))
-            batch_features = []
-            batch_labels = []
+    features = []
+    labels = []
 
-            for feature_file, label_file in zip(features_files[start:end], labels_files[start:end]):
-                feature_path = os.path.join(features_dir, feature_file)
-                label_path = os.path.join(labels_dir, label_file)
+    for feature_file, label_file in zip(features_files, labels_files):
+        feature_path = os.path.join(features_dir, feature_file)
+        label_path = os.path.join(labels_dir, label_file)
 
-                feature = np.load(feature_path)
-                label = np.load(label_path)
+        feature = np.load(feature_path)
+        label = np.load(label_path)
 
-                batch_features.append(feature)
-                batch_labels.append(label)
+        features.append(feature)
+        labels.append(label)
 
-            # Pad the sequences
-            padded_features = tf.keras.preprocessing.sequence.pad_sequences(
-                batch_features, padding='post', dtype='float32'
-            )
-            padded_labels = tf.keras.preprocessing.sequence.pad_sequences(
-                batch_labels, padding='post', dtype='float32', value=label_padding_value
-            )
-
-            yield padded_features, padded_labels
-
-# Create TensorFlow Dataset
+    return features, labels
 
 
-def create_tf_dataset(features_dir: str, labels_dir: str, batch_size: int, buffer_size: int = 100, label_padding_value: int = -1) -> tf.data.Dataset:
+def pad_sequences(sequences: List[np.ndarray], maxlen: int) -> np.ndarray:
+    """
+    Pad sequences to the same length.
+
+    Args:
+    - sequences (List[np.ndarray]): List of sequences to pad.
+    - maxlen (int): The length to pad the sequences to.
+
+    Returns:
+    - padded_sequences (np.ndarray): The padded sequences.
+    """
+    padded_sequences = np.zeros(
+        (len(sequences), maxlen, sequences[0].shape[1]))
+    for i, seq in enumerate(sequences):
+        padded_sequences[i, :seq.shape[0], :] = seq
+    return padded_sequences
+
+
+def create_tf_dataset(features: List[np.ndarray], labels: List[np.ndarray], maxlen: int) -> tf.data.Dataset:
     """
     Create a TensorFlow Dataset from the features and labels.
 
     Args:
-    - features_dir (str): The directory containing the feature files.
-    - labels_dir (str): The directory containing the label files.
-    - batch_size (int): The size of the batches to generate.
-    - buffer_size (int): The buffer size for shuffling.
-    - label_padding_value (int): The padding value for labels.
+    - features (List[np.ndarray]): The features.
+    - labels (List[np.ndarray]): The labels.
+    - maxlen (int): The length to pad the sequences to.
 
     Returns:
     - dataset (tf.data.Dataset): The TensorFlow Dataset.
     """
-    output_signature = (
-        tf.TensorSpec(shape=(None, None, None), dtype=tf.float32),
-        # Adjust based on number of classes
-        tf.TensorSpec(shape=(None, None, 6), dtype=tf.float32)
-    )
-
-    dataset = tf.data.Dataset.from_generator(
-        data_generator,
-        args=[features_dir, labels_dir, batch_size, label_padding_value],
-        output_signature=output_signature
-    )
-
-    return dataset.shuffle(buffer_size=buffer_size).prefetch(tf.data.experimental.AUTOTUNE)
+    features = pad_sequences(features, maxlen)
+    labels = pad_sequences(labels, maxlen)
+    dataset = tf.data.Dataset.from_tensor_slices((features, labels))
+    dataset = dataset.shuffle(buffer_size=1000).batch(32)
+    return dataset
 
 
-# Set batch size and buffer size
-batch_size = 16
-buffer_size = 100  # Adjusted buffer size to reduce memory usage
-
-# Create the dataset
-train_dataset = create_tf_dataset(
-    features_dir, labels_dir, batch_size, buffer_size)
-
-# Define the model
-
-
-def create_model(input_dim: int, num_classes: int, label_padding_value: int = -1) -> keras.Model:
+def custom_loss(y_true: tf.Tensor, y_pred: Tuple[tf.Tensor, tf.Tensor]) -> tf.Tensor:
     """
-    Create a Keras model for speech error detection.
+    Custom loss function for the model.
 
     Args:
-    - input_dim (int): The dimensionality of the input features.
-    - num_classes (int): The number of classes in the labels.
-    - label_padding_value (int): The padding value for labels.
+    - y_true (tf.Tensor): The true labels.
+    - y_pred (Tuple[tf.Tensor, tf.Tensor]): The predicted labels.
 
     Returns:
-    - model (keras.Model): The compiled Keras model.
+    - loss (tf.Tensor): The computed loss.
     """
-    # Variable-length sequences
-    inputs = keras.Input(shape=(None, input_dim), name='input_features')
-    masked_inputs = layers.Masking(mask_value=0.0, name='masking_layer')(
-        inputs)  # Mask the padded feature values
-    lstm_layer_1 = layers.LSTM(64, return_sequences=True, name='lstm_layer_1')(
-        masked_inputs)  # Return sequences for all LSTM layers
-    lstm_layer_2 = layers.LSTM(64, return_sequences=True, name='lstm_layer_2')(
-        lstm_layer_1)  # Ensure the last LSTM layer also returns sequences
-    dense_layer = layers.Dense(
-        64, activation='relu', name='dense_layer')(lstm_layer_2)
-    outputs = layers.Dense(num_classes, activation='sigmoid', name='output_layer')(
-        dense_layer)  # Ensure output shape matches target shape
+    # Print shapes for debugging
+    tf.print("y_true shape:", tf.shape(y_true))
+    tf.print("y_pred shape:", tf.shape(y_pred))
 
-    model = keras.Model(inputs=inputs, outputs=outputs,
-                        name='speech_error_detection_model')
+    y_true_frame = tf.cast(y_true, tf.float32)
+    y_pred_frame, y_pred_utt = y_pred
 
-    # Custom loss to ignore padded labels
-    def custom_loss(y_true: tf.Tensor, y_pred: tf.Tensor) -> tf.Tensor:
-        """
-        Custom loss function to ignore padded labels.
+    # Print shapes for debugging
+    tf.print("y_pred_utt shape:", tf.shape(y_pred_utt))
+    tf.print("y_true_frame shape:", tf.shape(y_true_frame))
+    tf.print("y_pred_frame shape:", tf.shape(y_pred_frame))
 
-        Args:
-        - y_true (tf.Tensor): The true labels.
-        - y_pred (tf.Tensor): The predicted labels.
+    # Derive y_true_utt from y_true_frame
+    y_true_utt = tf.cast(tf.reduce_any(
+        tf.equal(y_true_frame, 1), axis=1), tf.float32)
 
-        Returns:
-        - loss (tf.Tensor): The computed loss value.
-        """
-        mask = tf.cast(tf.not_equal(y_true, label_padding_value), tf.float32)
-        loss = mask * tf.keras.losses.binary_crossentropy(y_true, y_pred)
-        return tf.reduce_sum(loss) / tf.reduce_sum(mask)
+    loss_frame = keras.losses.binary_crossentropy(y_true_frame, y_pred_frame)
+    loss_utt = keras.losses.binary_crossentropy(y_true_utt, y_pred_utt)
 
-    model.compile(optimizer='adam', loss=custom_loss, metrics=['accuracy'])
+    return tf.reduce_mean(loss_frame) + tf.reduce_mean(loss_utt)
+
+
+def create_model(input_shape: Tuple[int, int], num_classes: int) -> keras.Model:
+    inputs = keras.Input(
+        shape=(input_shape[0], input_shape[1]), name="input_layer")
+
+    # Masking layer to handle padding in sequences
+    mask = layers.Masking(mask_value=0.0, name="masking_layer")(inputs)
+    # Input: (batch_size, timesteps, features)
+    # Output: (batch_size, timesteps, features)
+
+    # First LSTM layer
+    lstm_layer_1 = layers.LSTM(
+        64, return_sequences=True, name="lstm_layer_1")(mask)
+    # Input: (batch_size, timesteps, features)
+    # Output: (batch_size, timesteps, 64)
+
+    # Second LSTM layer
+    lstm_layer_2 = layers.LSTM(
+        64, return_sequences=True, name="lstm_layer_2")(lstm_layer_1)
+    # Input: (batch_size, timesteps, 64)
+    # Output: (batch_size, timesteps, 64)
+
+    # Frame-level prediction dense layer
+    dense_layer_frame = layers.Dense(
+        64, activation='relu', name="dense_layer_frame")(lstm_layer_2)
+    # Input: (batch_size, timesteps, 64)
+    # Output: (batch_size, timesteps, 64)
+
+    # Frame-level prediction output layer
+    output_frame = layers.Dense(
+        num_classes, activation='sigmoid', name="output_layer_frame")(dense_layer_frame)
+    # Input: (batch_size, timesteps, 64)
+    # Output: (batch_size, timesteps, num_classes)
+
+    # Attention mechanism for utterance-level prediction
+    attention_layer = Attention(name="attention_layer")(output_frame)
+    # Input: (batch_size, timesteps, num_classes)
+    # Output: (batch_size, num_classes)
+
+    # Utterance-level dense layer
+    dense_layer_utt = layers.Dense(
+        64, activation='relu', name="dense_layer_utt")(attention_layer)
+    # Input: (batch_size, num_classes)
+    # Output: (batch_size, 64)
+
+    # Utterance-level output layer
+    output_utt = layers.Dense(
+        num_classes, activation='sigmoid', name="output_layer_utt")(dense_layer_utt)
+    # Input: (batch_size, 64)
+    # Output: (batch_size, num_classes)
+
+    model = keras.Model(inputs=inputs, outputs=[output_frame, output_utt])
+
+    # Define custom loss function
+    losses = {
+        "output_layer_frame": "binary_crossentropy",
+        "output_layer_utt": "binary_crossentropy",
+    }
+
+    lossWeights = {"output_layer_frame": 1.0, "output_layer_utt": 1.0}
+
+    model.compile(optimizer='adam', loss=losses,
+                  loss_weights=lossWeights, metrics=['accuracy'])
+
     return model
 
 
-# Create the model
-# Define input_dim and num_classes based on your data
-input_dim = 128  # Adjust based on your feature shape
-num_classes = 6  # Number of classes
-model = create_model(input_dim, num_classes)
+if __name__ == "__main__":
+    # Define paths
+    features_dir = "data/features/"
+    labels_dir = "data/labels/"
 
-# Train the model
-model.fit(train_dataset, epochs=10)
+    # Ensure Eager Execution
+    tf.config.run_functions_eagerly(True)
 
-# Save the model
-model.save("speech_error_detection_model.h5")
+    # Load data
+    features, labels = load_data(features_dir, labels_dir)
+
+    # Determine the maximum sequence length
+    maxlen = max(max(feature.shape[0] for feature in features), max(
+        label.shape[0] for label in labels))
+
+    # Create TensorFlow Dataset
+    train_dataset = create_tf_dataset(features, labels, maxlen)
+
+    # Create the model
+    input_shape = (maxlen, features[0].shape[1])
+    num_classes = labels[0].shape[1]
+    model = create_model(input_shape, num_classes)
+
+    # Show model summary
+    model.summary()
+
+    # Test model output types
+    test_input = np.random.rand(1, maxlen, input_shape[1]).astype(np.float32)
+    test_output = model(test_input)
+
+    print("Test model output types:")
+    print("Type of test_output:", type(test_output))
+    print("Length of test_output:", len(test_output))
+    print("Shapes of test_output elements:", [o.shape for o in test_output])
+
+    # Train the model
+    model.fit(train_dataset, epochs=10)
+
+    # Save the model
+    model.save("speech_error_detection_model.keras")
