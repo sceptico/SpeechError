@@ -92,7 +92,9 @@ def error_rate(y_true, y_pred):
 
     # Error rate (ER) calculation
     # Add epsilon to avoid division by zero
-    ER = (S + D + I) / (N + K.epsilon())
+    # Divide by the total number of active sound events (N)
+    # Divide by the total number of frames (y_true.shape[0])
+    ER = (S + D + I) / (N + K.epsilon()) / y_true.shape[0]
 
     return ER
 
@@ -129,19 +131,19 @@ def create_model(input_shape: Tuple[int, int], num_classes: int) -> keras.Model:
 
     # First LSTM layer
     lstm_layer_1 = layers.LSTM(
-        64, return_sequences=True, name="lstm_layer_1")(mask)
+        32, return_sequences=True, name="lstm_layer_1")(mask)
     # Input: (batch_size, timesteps, features)
     # Output: (batch_size, timesteps, 64)
 
     # Second LSTM layer
     lstm_layer_2 = layers.LSTM(
-        64, return_sequences=True, name="lstm_layer_2")(lstm_layer_1)
+        32, return_sequences=True, name="lstm_layer_2")(lstm_layer_1)
     # Input: (batch_size, timesteps, 64)
     # Output: (batch_size, timesteps, 64)
 
     # Frame-level prediction dense layer
     dense_layer_frame = layers.Dense(
-        64, activation='relu', name="dense_layer_frame")(lstm_layer_2)
+        32, activation='relu', name="dense_layer_frame")(lstm_layer_2)
     # Input: (batch_size, timesteps, 64)
     # Output: (batch_size, timesteps, 64)
 
@@ -158,7 +160,7 @@ def create_model(input_shape: Tuple[int, int], num_classes: int) -> keras.Model:
 
     # Utterance-level dense layer
     dense_layer_utt = layers.Dense(
-        64, activation='relu', name="dense_layer_utt")(attention_layer)
+        32, activation='relu', name="dense_layer_utt")(attention_layer)
     # Input: (batch_size, num_classes)
     # Output: (batch_size, 64)
 
@@ -176,7 +178,7 @@ def create_model(input_shape: Tuple[int, int], num_classes: int) -> keras.Model:
         "output_layer_utt": custom_loss,
     }
 
-    lossWeights = {"output_layer_frame": 1.0, "output_layer_utt": 1.0}
+    lossWeights = {"output_layer_frame": 0.0, "output_layer_utt": 1.0}
 
     # Define the metrics for each output
     metrics = {
@@ -222,7 +224,7 @@ if __name__ == "__main__":
     print(f"Optimizer: {model.optimizer}")
 
     # Train the model
-    model.fit(train_dataset, epochs=10)
+    model.fit(train_dataset, epochs=2)
 
     # Save the model
     model.save("speech_error_detection_model.keras")

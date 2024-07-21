@@ -102,7 +102,7 @@ class FeatureExtractor():
             features_list.append(feature)
 
         for i, feature in enumerate(features_list):
-            np.save(f"{output_file.split('.')[0]}_{i+1}.npy", feature)
+            np.save(f"{output_file.split('.')[0]}_{i+1:04d}.npy", feature)
 
         return features_list
 

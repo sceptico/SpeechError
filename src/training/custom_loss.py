@@ -18,6 +18,8 @@ def custom_loss(y_true: tf.Tensor, y_pred: tf.Tensor) -> tf.Tensor:
     # Only consider the frames and utterances with speech when calculating the loss
     mask = tf.equal(y_true, 1)
 
+    y_pred = tf.clip_by_value(y_pred, 1e-7, 1 - 1e-7)
+
     if tf.rank(y_true) == 3:  # Frame-level
         # Convert y_true to float32 and apply the mask
         y_true_frame = tf.cast(y_true, tf.float32)
