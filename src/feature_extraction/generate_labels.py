@@ -5,6 +5,7 @@ import pandas as pd
 import configparser
 import multiprocessing
 import csv
+import math
 from typing import List, Tuple
 
 
@@ -273,14 +274,28 @@ class LabelEncoder:
             audio_file_name = parts[0]
             segment_number = int(parts[1].replace('.npy', ''))
 
+            label_list = []
+            start_time = 0
+            end_time = 0
+            label_file = ""
+
             for item in self.label_info:
                 if item['feature_file'] == feature_file:
                     label_list = item['label_list']
                     start_time = item['start_time']
+                    end_time = item['end_time']
+                    label_file = item['label_file']
                     break
 
             feature = np.load(feature_file)
             feature_length = feature.shape[0]
+
+            # Validate length of feature array
+            feature_length_check = math.ceil(
+                (end_time - start_time) / self.hop_length_seconds)
+            if not (feature_length == feature_length_check or feature_length == feature_length_check + 1):
+                print(
+                    f"Feature length mismatch for {feature_file}; expected {feature_length_check}, got {feature_length}")
 
             labels = np.zeros((feature_length,))
 
@@ -298,8 +313,6 @@ class LabelEncoder:
 
                     labels[label_start_index:label_end_index] = label_index
 
-            label_file_name = f"{audio_file_name}_{segment_number}_labels.npy"
-            label_file = os.path.join(self.label_dir, label_file_name)
             np.save(label_file, labels)
 
             results.append((feature_file, start_time,
