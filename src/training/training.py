@@ -4,11 +4,11 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
-from tensorflow.keras import backend as K
 from typing import Tuple, List
 
 from Attention import Attention
 from custom_loss import custom_loss
+from error_rate import error_rate
 
 
 def load_data(features_dir: str, labels_dir: str) -> Tuple[List[np.ndarray], List[np.ndarray]]:
@@ -53,50 +53,17 @@ def pad_sequences(sequences: List[np.ndarray], maxlen: int) -> np.ndarray:
     Returns:
     - padded_sequences (np.ndarray): The padded sequences.
     """
-    padded_sequences = np.zeros(
-        (len(sequences), maxlen, sequences[0].shape[1]))
+    # Ensure each sequence is 2D
+    sequences = [seq if seq.ndim == 2 else np.expand_dims(
+        seq, axis=-1) for seq in sequences]
+
+    feature_dim = sequences[0].shape[1]
+    padded_sequences = np.zeros((len(sequences), maxlen, feature_dim))
+
     for i, seq in enumerate(sequences):
         padded_sequences[i, :seq.shape[0], :] = seq
+
     return padded_sequences
-
-
-def error_rate(y_true, y_pred):
-    """
-    Custom metric to calculate the error rate (ER).
-
-    Args:
-    - y_true: Ground truth labels.
-    - y_pred: Predicted labels.
-
-    Returns:
-    - Error rate (ER).
-    """
-    # Ensure both tensors are of the same type
-    y_true = K.cast(y_true, 'float32')
-    y_pred = K.cast(y_pred, 'float32')
-
-    # Convert predictions to binary
-    y_pred = K.round(y_pred)
-
-    # Calculate true positives, false positives, false negatives
-    FP = K.sum(K.cast(y_pred, 'int32') - K.cast(y_true * y_pred, 'int32'))
-    FN = K.sum(K.cast(y_true, 'int32') - K.cast(y_true * y_pred, 'int32'))
-
-    # Calculate substitutions (S), deletions (D), and insertions (I)
-    S = K.cast(K.minimum(FN, FP), 'float32')
-    D = K.cast(K.maximum(0, FN - FP), 'float32')
-    I = K.cast(K.maximum(0, FP - FN), 'float32')
-
-    # Calculate total number of active sound events (N)
-    N = K.sum(y_true)
-
-    # Error rate (ER) calculation
-    # Add epsilon to avoid division by zero
-    # Divide by the total number of active sound events (N)
-    # Divide by the total number of frames (y_true.shape[0])
-    ER = (S + D + I) / (N + K.epsilon()) / y_true.shape[0]
-
-    return ER
 
 
 def create_tf_dataset(features: List[np.ndarray], labels: List[np.ndarray], maxlen: int) -> tf.data.Dataset:
@@ -133,24 +100,24 @@ def create_model(input_shape: Tuple[int, int], num_classes: int) -> keras.Model:
     lstm_layer_1 = layers.LSTM(
         32, return_sequences=True, name="lstm_layer_1")(mask)
     # Input: (batch_size, timesteps, features)
-    # Output: (batch_size, timesteps, 64)
+    # Output: (batch_size, timesteps, 32)
 
     # Second LSTM layer
     lstm_layer_2 = layers.LSTM(
         32, return_sequences=True, name="lstm_layer_2")(lstm_layer_1)
-    # Input: (batch_size, timesteps, 64)
-    # Output: (batch_size, timesteps, 64)
+    # Input: (batch_size, timesteps, 32)
+    # Output: (batch_size, timesteps, 32)
 
     # Frame-level prediction dense layer
     dense_layer_frame = layers.Dense(
         32, activation='relu', name="dense_layer_frame")(lstm_layer_2)
-    # Input: (batch_size, timesteps, 64)
-    # Output: (batch_size, timesteps, 64)
+    # Input: (batch_size, timesteps, 32)
+    # Output: (batch_size, timesteps, 32)
 
     # Frame-level prediction output layer
     output_frame = layers.Dense(
         num_classes, activation='sigmoid', name="output_layer_frame")(dense_layer_frame)
-    # Input: (batch_size, timesteps, 64)
+    # Input: (batch_size, timesteps, 32)
     # Output: (batch_size, timesteps, num_classes)
 
     # Attention mechanism for utterance-level prediction
@@ -162,12 +129,12 @@ def create_model(input_shape: Tuple[int, int], num_classes: int) -> keras.Model:
     dense_layer_utt = layers.Dense(
         32, activation='relu', name="dense_layer_utt")(attention_layer)
     # Input: (batch_size, num_classes)
-    # Output: (batch_size, 64)
+    # Output: (batch_size, 32)
 
     # Utterance-level output layer
     output_utt = layers.Dense(
         num_classes, activation='sigmoid', name="output_layer_utt")(dense_layer_utt)
-    # Input: (batch_size, 64)
+    # Input: (batch_size, 32)
     # Output: (batch_size, num_classes)
 
     model = keras.Model(inputs=inputs, outputs=[output_frame, output_utt])
@@ -192,13 +159,43 @@ def create_model(input_shape: Tuple[int, int], num_classes: int) -> keras.Model:
     return model
 
 
+def get_layer_outputs(model: keras.Model, inputs: np.ndarray) -> List[np.ndarray]:
+    """
+    Get the outputs of all layers in the model for the given inputs.
+
+    Args:
+    - model (keras.Model): The original model.
+    - inputs (np.ndarray): The input data.
+
+    Returns:
+    - List[np.ndarray]: The outputs of each layer.
+    """
+    layer_outputs = [layer.output for layer in model.layers]
+    intermediate_model = keras.Model(inputs=model.input, outputs=layer_outputs)
+    intermediate_outputs = intermediate_model.predict(inputs)
+    return intermediate_outputs
+
+
+def print_layer_outputs(layer_outputs: List[np.ndarray]) -> None:
+    """
+    Print the outputs of each layer for debugging.
+
+    Args:
+    - layer_outputs (List[np.ndarray]): The outputs of each layer.
+    """
+    for i, output in enumerate(layer_outputs):
+        print(f"Layer {i}: {model.layers[i].name}")
+        print(f"Output of layer {i} ({output.shape}):\n{output}")
+        print("-" * 50)
+
+
 if __name__ == "__main__":
     # Define paths
     features_dir = "data/features/"
     labels_dir = "data/labels/"
 
-    # Ensure Eager Execution
-    tf.config.run_functions_eagerly(True)
+    # # Ensure Eager Execution
+    # tf.config.run_functions_eagerly(True)
 
     # Load data
     features, labels = load_data(features_dir, labels_dir)
@@ -218,13 +215,23 @@ if __name__ == "__main__":
     # Show model summary
     model.summary()
 
-    # Show model attributes
-    print(f"Losses: {model.loss}")
-    print(f"Metrics: {model.metrics}")
-    print(f"Optimizer: {model.optimizer}")
+    # '''Test debugging model with one batch of data'''
+    # for batch_features, (batch_labels_frame, batch_labels_utt) in train_dataset.take(1):
+    #     intermediate_outputs = get_layer_outputs(model, batch_features)
+    #     print_layer_outputs(intermediate_outputs)
+
+    #     # Calculate the loss for this batch
+    #     output_frame, output_utt = model(batch_features, training=False)
+    #     loss_frame = custom_loss(batch_labels_frame, output_frame)
+    #     loss_utt = custom_loss(batch_labels_utt, output_utt)
+    #     total_loss = 1.0 * loss_frame + 1.0 * loss_utt
+
+    #     print(f"Frame-level loss: {loss_frame.numpy()}")
+    #     print(f"Utterance-level loss: {loss_utt.numpy()}")
+    #     print(f"Total loss: {total_loss.numpy()}")
 
     # Train the model
-    model.fit(train_dataset, epochs=2)
+    model.fit(train_dataset, epochs=1)
 
     # Save the model
     model.save("speech_error_detection_model.keras")

@@ -266,6 +266,8 @@ class LabelEncoder:
         """
         results = []
 
+        num_classes = len(self.labels_to_keep) if self.multi_class else 1
+
         for sub_list_index, feature_file in enumerate(list_feature_files):
             current_index = index * file_per_process + sub_list_index
             feature_file = feature_file['feature_file']
@@ -297,7 +299,7 @@ class LabelEncoder:
                 print(
                     f"Feature length mismatch for {feature_file}; expected {feature_length_check}, got {feature_length}")
 
-            labels = np.zeros((feature_length,))
+            labels = np.zeros((feature_length, num_classes))
 
             for label_start_time, label_end_time, label in label_list:
                 label_start_index = int(
@@ -308,10 +310,9 @@ class LabelEncoder:
                 if label in self.labels_to_keep:
                     if self.multi_class:
                         label_index = self.unique_labels.index(label)
+                        labels[label_start_index:label_end_index, label_index] = 1
                     else:
-                        label_index = 1
-
-                    labels[label_start_index:label_end_index] = label_index
+                        labels[label_start_index:label_end_index, 0] = 1
 
             np.save(label_file, labels)
 

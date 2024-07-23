@@ -30,6 +30,7 @@ class TestLabels(unittest.TestCase):
             self.label_info = list(csv.reader(f))
 
         self.hop_length_seconds = 0.02
+        self.num_classes = self.label_file_no_labels.shape[0]
 
     def test_no_labels_length(self):
         # Search for the row containing the label file in the label_info file
@@ -85,7 +86,7 @@ class TestLabels(unittest.TestCase):
         expected_start_index = int(start_time / self.hop_length_seconds)
         expected_end_index = int(end_time / self.hop_length_seconds)
         expected_array = np.zeros(self.label_file_one_label.shape)
-        expected_array[expected_start_index:expected_end_index] = 1
+        expected_array[expected_start_index:expected_end_index, 0] = 1
 
         self.assertTrue(np.array_equal(
             self.label_file_one_label, expected_array))
