@@ -8,7 +8,7 @@ from typing import Tuple, List
 
 from Attention import Attention
 from custom_loss import custom_loss
-from error_rate import error_rate
+from CustomErrorRateMetric import CustomErrorRateMetric, ErrorRateLoggingCallback
 
 
 def load_data(features_dir: str, labels_dir: str) -> Tuple[List[np.ndarray], List[np.ndarray]]:
@@ -145,12 +145,16 @@ def create_model(input_shape: Tuple[int, int], num_classes: int) -> keras.Model:
         "output_layer_utt": custom_loss,
     }
 
-    lossWeights = {"output_layer_frame": 0.0, "output_layer_utt": 1.0}
+    lossWeights = {"output_layer_frame": 1.0, "output_layer_utt": 1.0}
 
-    # Define the metrics for each output
+    # metrics = {
+    #     "output_layer_frame": [CustomErrorRateMetric(), "FalsePositives", "FalseNegatives", "TruePositives", "TrueNegatives", "accuracy"],
+    #     "output_layer_utt": ["FalsePositives", "FalseNegatives", "TruePositives", "TrueNegatives", "accuracy", "F1Score"],
+    # }
+
     metrics = {
-        "output_layer_frame": error_rate,
-        "output_layer_utt": None,
+        "output_layer_frame": [CustomErrorRateMetric()],
+        "output_layer_utt": ["accuracy"],
     }
 
     model.compile(optimizer='adam', loss=losses,
@@ -194,9 +198,6 @@ if __name__ == "__main__":
     features_dir = "data/features/"
     labels_dir = "data/labels/"
 
-    # # Ensure Eager Execution
-    # tf.config.run_functions_eagerly(True)
-
     # Load data
     features, labels = load_data(features_dir, labels_dir)
 
@@ -231,7 +232,8 @@ if __name__ == "__main__":
     #     print(f"Total loss: {total_loss.numpy()}")
 
     # Train the model
-    model.fit(train_dataset, epochs=1)
+    model.fit(train_dataset, epochs=20)
+    # model.fit(train_dataset, epochs=1, callbacks=[ErrorRateLoggingCallback()])
 
     # Save the model
     model.save("speech_error_detection_model.keras")

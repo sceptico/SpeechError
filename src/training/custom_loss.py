@@ -16,7 +16,7 @@ def custom_loss(y_true: tf.Tensor, y_pred: tf.Tensor) -> tf.Tensor:
     """
     # Create a mask for the true labels
     # Only consider the frames and utterances with speech when calculating the loss
-    SMALL_LOSS = tf.constant(1e-6, dtype=tf.float32)
+    SMALL_LOSS = tf.constant(1e-7, dtype=tf.float32)
     mask = tf.equal(y_true, 1)
     y_pred = tf.clip_by_value(y_pred, 1e-7, 1 - 1e-7)
 
