@@ -9,6 +9,8 @@ from typing import Tuple, List
 from Attention import Attention
 from custom_loss import custom_loss
 from CustomErrorRateMetric import CustomErrorRateMetric, ErrorRateLoggingCallback
+from CustomDataGenerator import CustomDataGenerator
+from util import pad_sequences
 
 
 def load_data(features_dir: str, labels_dir: str) -> Tuple[List[np.ndarray], List[np.ndarray]]:
@@ -40,30 +42,6 @@ def load_data(features_dir: str, labels_dir: str) -> Tuple[List[np.ndarray], Lis
         labels.append(label)
 
     return features, labels
-
-
-def pad_sequences(sequences: List[np.ndarray], maxlen: int) -> np.ndarray:
-    """
-    Pad sequences to the same length.
-
-    Args:
-    - sequences (List[np.ndarray]): List of sequences to pad.
-    - maxlen (int): The length to pad the sequences to.
-
-    Returns:
-    - padded_sequences (np.ndarray): The padded sequences.
-    """
-    # Ensure each sequence is 2D
-    sequences = [seq if seq.ndim == 2 else np.expand_dims(
-        seq, axis=-1) for seq in sequences]
-
-    feature_dim = sequences[0].shape[1]
-    padded_sequences = np.zeros((len(sequences), maxlen, feature_dim))
-
-    for i, seq in enumerate(sequences):
-        padded_sequences[i, :seq.shape[0], :] = seq
-
-    return padded_sequences
 
 
 def create_tf_dataset(features: List[np.ndarray], labels: List[np.ndarray], maxlen: int) -> tf.data.Dataset:
@@ -206,7 +184,8 @@ if __name__ == "__main__":
         label.shape[0] for label in labels))
 
     # Create TensorFlow Dataset
-    train_dataset = create_tf_dataset(features, labels, maxlen)
+    batch_size = 64
+    train_generator = CustomDataGenerator(features, labels, batch_size, maxlen)
 
     # Create the model
     input_shape = (maxlen, features[0].shape[1])
@@ -232,7 +211,7 @@ if __name__ == "__main__":
     #     print(f"Total loss: {total_loss.numpy()}")
 
     # Train the model
-    model.fit(train_dataset, epochs=20)
+    model.fit(train_generator, epochs=2)
     # model.fit(train_dataset, epochs=1, callbacks=[ErrorRateLoggingCallback()])
 
     # Save the model
