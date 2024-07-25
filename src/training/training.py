@@ -182,10 +182,30 @@ def training(train_csv_path: str, eval_csv_path: str, test_csv_path: str, epochs
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Train the model.")
+    parser.add_argument("--train_csv_path", type=str,
+                        required=True, help="Path to the training CSV file")
+    parser.add_argument("--eval_csv_path", type=str,
+                        required=True, help="Path to the evaluation CSV file")
+    parser.add_argument("--test_csv_path", type=str,
+                        required=True, help="Path to the test CSV file")
+    parser.add_argument("--epochs", type=int,
+                        default=50, help="Number of epochs")
+    parser.add_argument("--batch_size", type=int,
+                        default=64, help="Batch size")
+
+    args = parser.parse_args()
+    train_csv_path = args.train_csv_path
+    eval_csv_path = args.eval_csv_path
+    test_csv_path = args.test_csv_path
+    epochs = args.epochs
+    batch_size = args.batch_size
+
     loss, frame_level_precision, utterance_level_f1 = training(
-        "data/metadata/train.csv", "data/metadata/eval.csv", "data/metadata/test.csv", 5, 64)
-    print("Results:")
-    print("--------")
+        train_csv_path, eval_csv_path, test_csv_path, epochs, batch_size)
+
+    print("Results on the test set:")
+    print("------------------------")
     print(f"Test loss: {loss:.4f}")
     print(f"Frame-level precision: {frame_level_precision:.4f}")
     print(f"Utterance-level F1 score: {utterance_level_f1:.4f}")

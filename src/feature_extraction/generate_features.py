@@ -276,14 +276,14 @@ if __name__ == '__main__':
     parser.add_argument('--n_process', type=int, dest='n_process',
                         help='Number of processes to use for feature extraction.', default=4)
 
-    arguments = parser.parse_args()
+    args = parser.parse_args()
 
-    wav_list = arguments.wav_list
-    wav_dir = arguments.wav_dir
-    transcript_dir = arguments.transcript_dir
-    feature_dir = arguments.feature_dir
-    feature_config = arguments.feature_config
-    n_process = arguments.n_process
+    wav_list = args.wav_list
+    wav_dir = args.wav_dir
+    transcript_dir = args.transcript_dir
+    feature_dir = args.feature_dir
+    feature_config = args.feature_config
+    n_process = args.n_process
 
     paths = [wav_list, wav_dir, transcript_dir, feature_dir, feature_config]
 

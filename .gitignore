@@ -11,6 +11,12 @@
 # model files
 *.keras
 
+# metadata files
+metadata/
+
+# transcription files
+whipserX/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

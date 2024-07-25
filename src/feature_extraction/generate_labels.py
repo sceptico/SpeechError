@@ -391,16 +391,16 @@ if __name__ == '__main__':
     parser.add_argument('--multi_class', action='store_true',
                         help='Whether to use multi-class labels. If False, one class (speech error or non-speech error) is used.', default=False)
 
-    arguments = parser.parse_args()
+    args = parser.parse_args()
 
-    config_path = arguments.feature_config
-    annotations_path = arguments.annotations_path
-    transcript_dir = arguments.transcript_dir
-    feature_dir = arguments.feature_dir
-    label_dir = arguments.label_dir
-    label_info_dir = arguments.label_info_dir
-    n_process = arguments.n_process
-    multi_class = arguments.multi_class
+    config_path = args.feature_config
+    annotations_path = args.annotations_path
+    transcript_dir = args.transcript_dir
+    feature_dir = args.feature_dir
+    label_dir = args.label_dir
+    label_info_dir = args.label_info_dir
+    n_process = args.n_process
+    multi_class = args.multi_class
 
     labels_to_keep = ['Phonological Addition',
                       'Phonological Deletion', 'Phonological Substitution']
