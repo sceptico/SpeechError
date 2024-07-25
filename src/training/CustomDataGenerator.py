@@ -6,7 +6,17 @@ from util import pad_sequences
 
 
 class CustomDataGenerator(tf.keras.utils.Sequence):
-    def __init__(self, features: List[np.ndarray], labels: List[np.ndarray], batch_size: int, maxlen: int):
+    def __init__(self, features: List[np.ndarray], labels: List[np.ndarray], batch_size: int, maxlen: int, **kwargs):
+        """
+        Custom data generator that ensures that every batch has at least one sample with events.
+
+        Args:
+        - features (List[np.ndarray]): The features.
+        - labels (List[np.ndarray]): The labels.
+        - batch_size (int): The batch size.
+        - maxlen (int): The maximum sequence length.
+        """
+        super().__init__(**kwargs)
         self.features = features
         self.labels = labels
         self.batch_size = batch_size
@@ -23,6 +33,9 @@ class CustomDataGenerator(tf.keras.utils.Sequence):
         self.on_epoch_end()
 
     def __len__(self):
+        """
+        Calculate the number of batches in the generator.
+        """
         return int(np.floor(len(self.features) / self.batch_size))
 
     def __getitem__(self, index):

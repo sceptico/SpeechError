@@ -10,6 +10,26 @@ import csv
 
 
 class FeatureExtractor():
+    """
+    Extract features from audio files and save them to disk.
+
+    Args:
+    - config_path (str): Path to the feature extraction configuration file.
+
+    Attributes:
+    - config_path (str): Path to the feature extraction configuration file.
+    - n_fft (int): Number of FFT points.
+    - win_length (float): Length of the window in seconds.
+    - hop_length (float): Hop length in seconds.
+    - sr (int): Sampling rate.
+    - n_mels (int): Number of Mel bands.
+    - f_min (int): Minimum frequency.
+    - f_max (int): Maximum frequency.
+    - frame_length (int): Length of the frame.
+    - win_length_seconds (int): Length of the window in samples.
+    - hop_length_seconds (int): Hop length in samples.
+    """
+
     def __init__(self, config_path: str) -> None:
         self.config_path = config_path
         self.n_fft = None
@@ -26,6 +46,9 @@ class FeatureExtractor():
         self._init_config()
 
     def _init_config(self) -> None:
+        """
+        Initialize the feature extraction configuration.
+        """
         config_path = self.config_path
 
         if not os.path.exists(config_path):
@@ -55,6 +78,14 @@ class FeatureExtractor():
         self.hop_length_seconds = int(self.hop_length * self.sr)
 
     def _get_feature(self, input_file: str, output_file: str, transcript_file: str) -> List[np.ndarray]:
+        """
+        Extract features from an audio file and save them to disk.
+
+        Args:
+        - input_file (str): The path to the input audio file.
+        - output_file (str): The path to save the extracted features.
+        - transcript_file (str): The path to the transcript file.
+        """
         sampling_rate = self.sr
         n_fft = self.n_fft
         n_mels = self.n_mels
@@ -79,6 +110,7 @@ class FeatureExtractor():
         y, sr = librosa.load(input_file, sr=sampling_rate)
 
         features_list = []
+
         for start_time, end_time in segments:
             segment = y[int(start_time * sr):int(end_time * sr)]
 
@@ -102,11 +134,25 @@ class FeatureExtractor():
             features_list.append(feature)
 
         for i, feature in enumerate(features_list):
-            np.save(f"{output_file.split('.')[0]}_{i+1:04d}.npy", feature)
+            file_name = f"{output_file.split('.')[0]}_{i+1:04d}.npy"
+            np.save(file_name, feature)
+            print(f"Saved feature to {file_name}")
 
         return features_list
 
     def _get_feature_for_single_list(self, list_audio_files: List[str], wav_dir: str, transcript_dir: str, feature_dir: str, index: int, file_per_process: int, wav_list_length: int) -> None:
+        """
+        Extract features from a list of audio files and save them to disk.
+
+        Args:
+        - list_audio_files (List[str]): List of audio files to extract features from.
+        - wav_dir (str): Directory containing the (.wav) audio files.
+        - transcript_dir (str): Directory containing the (.csv) transcript files.
+        - feature_dir (str): Directory to save the extracted features.
+        - index (int): The index of the process.
+        - file_per_process (int): Number of files to process per process.
+        - wav_list_length (int): Total number of audio files to process.
+        """
         for sub_list_index, file in enumerate(list_audio_files):
             index = index * file_per_process + sub_list_index
             input_file = os.path.join(wav_dir, file)
@@ -132,6 +178,16 @@ class FeatureExtractor():
                     f"Extracting features {index + 1}/{wav_list_length}: {input_file} already exists")
 
     def generate_feature_multiprocessing(self, list_audio_files: str, wav_dir: str, transcript_dir: str, feature_dir: str, n_process: int) -> None:
+        """
+        Extract features from a list of audio files and save them to disk using multiprocessing.
+
+        Args:
+        - list_audio_files (str): Path to the list of audio files to extract features from.
+        - wav_dir (str): Directory containing the (.wav) audio files.
+        - transcript_dir (str): Directory containing the (.csv) transcript files.
+        - feature_dir (str): Directory to save the extracted features.
+        - n_process (int): Number of processes to use for feature extraction.
+        """
         with open(list_audio_files, 'r') as f:
             wav_list = f.readlines()
 
@@ -154,6 +210,16 @@ class FeatureExtractor():
                     f"Process {process_index + 1}/{min(n_process, len(wav_list))} started")
 
     def _find_transcript_file(self, transcript_dir: str, transcript_file_name: str) -> str:
+        """
+        Find the transcript file in the transcript directory.
+
+        Args:
+        - transcript_dir (str): Directory containing the transcript files.
+        - transcript_file_name (str): Name of the transcript file.
+
+        Returns:
+        - str: The path to the transcript file.
+        """
         for root, dirs, files in os.walk(transcript_dir):
             if transcript_file_name in files:
                 return os.path.join(root, transcript_file_name)
@@ -161,6 +227,16 @@ class FeatureExtractor():
 
 
 def file_exists_with_prefix(directory: str, output_file_prefix: str) -> bool:
+    """
+    Check if a file with the given prefix exists in the directory.
+
+    Args:
+    - directory (str): The directory to search for the file.
+    - output_file_prefix (str): The prefix of the file to search for.
+
+    Returns:
+    - bool: True if the file exists, False otherwise.
+    """
     for filename in os.listdir(directory):
         if filename.startswith(output_file_prefix):
             return True
@@ -168,6 +244,17 @@ def file_exists_with_prefix(directory: str, output_file_prefix: str) -> bool:
 
 
 def extract_feature(wav_list: List[str], wav_dir: str, transcript_dir: str, feature_dir: str, feature_config_path: str, n_process: int) -> None:
+    """
+    Extract features from a list of audio files and save them to disk.
+
+    Args:
+    - wav_list (List[str]): List of audio files to extract features from.
+    - wav_dir (str): Directory containing the (.wav) audio files.
+    - transcript_dir (str): Directory containing the (.csv) transcript files.
+    - feature_dir (str): Directory to save the extracted features.
+    - feature_config_path (str): Path to the feature extraction configuration file.
+    - n_process (int): Number of processes to use for feature extraction.
+    """
     feature_extractor = FeatureExtractor(feature_config_path)
     feature_extractor.generate_feature_multiprocessing(
         wav_list, wav_dir, transcript_dir, feature_dir, n_process)

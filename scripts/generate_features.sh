@@ -1,4 +1,4 @@
-PROCESS_NUM=20
+PROCESS_NUM=4
 WAVE_LIST=data/metadata/wav_list.lst
 WAVE_DIR=data/audio
 TRANSCRIPT_DIR=data/whisperX

@@ -2,38 +2,37 @@
 import os
 import numpy as np
 import tensorflow as tf
+import pandas as pd
 from tensorflow import keras
 from tensorflow.keras import layers
 from typing import Tuple, List
+import argparse
 
 from Attention import Attention
 from custom_loss import custom_loss
-from CustomErrorRateMetric import CustomErrorRateMetric, ErrorRateLoggingCallback
+from CustomErrorRateMetric import CustomErrorRateMetric
 from CustomDataGenerator import CustomDataGenerator
 from util import pad_sequences
 
 
-def load_data(features_dir: str, labels_dir: str) -> Tuple[List[np.ndarray], List[np.ndarray]]:
+def load_data_from_csv(csv_file: str) -> Tuple[List[np.ndarray], List[np.ndarray]]:
     """
-    Load .npy files from the specified directories.
+    Load .npy files specified in the CSV file.
 
     Args:
-    - features_dir (str): The directory containing the feature files.
-    - labels_dir (str): The directory containing the label files.
+    - csv_file (str): The path to the CSV file containing file names and labels.
 
     Returns:
     - features (List[np.ndarray]): The loaded features.
     - labels (List[np.ndarray]): The loaded labels.
     """
-    features_files = sorted(os.listdir(features_dir))
-    labels_files = sorted(os.listdir(labels_dir))
-
+    data = pd.read_csv(csv_file)
     features = []
     labels = []
 
-    for feature_file, label_file in zip(features_files, labels_files):
-        feature_path = os.path.join(features_dir, feature_file)
-        label_path = os.path.join(labels_dir, label_file)
+    for index, row in data.iterrows():
+        feature_path = row['feature_file']
+        label_path = row['label_file']
 
         feature = np.load(feature_path)
         label = np.load(label_path)
@@ -44,28 +43,20 @@ def load_data(features_dir: str, labels_dir: str) -> Tuple[List[np.ndarray], Lis
     return features, labels
 
 
-def create_tf_dataset(features: List[np.ndarray], labels: List[np.ndarray], maxlen: int) -> tf.data.Dataset:
+def create_model(input_shape: Tuple[int, int], num_classes: int) -> keras.Model:
     """
-    Create a TensorFlow Dataset from the features and labels.
+    Create the model.
+
+    The model consists of two LSTM layers followed by a frame-level prediction dense layer and output layer.
+    The output of the frame-level prediction layer is passed through an attention mechanism to obtain the utterance-level prediction.
 
     Args:
-    - features (List[np.ndarray]): The features.
-    - labels (List[np.ndarray]): The labels.
-    - maxlen (int): The length to pad the sequences to.
+    - input_shape (Tuple[int, int]): The input shape of the model.
+    - num_classes (int): The number of classes.
 
     Returns:
-    - dataset (tf.data.Dataset): The TensorFlow Dataset.
+    - model (keras.Model): The compiled model.
     """
-    features = pad_sequences(features, maxlen)
-    labels_frame = pad_sequences(labels, maxlen)
-    labels_utt = np.any(labels_frame == 1, axis=1).astype(np.float32)
-    dataset = tf.data.Dataset.from_tensor_slices(
-        (features, (labels_frame, labels_utt)))
-    dataset = dataset.shuffle(buffer_size=1000).batch(32)
-    return dataset
-
-
-def create_model(input_shape: Tuple[int, int], num_classes: int) -> keras.Model:
     inputs = keras.Input(
         shape=(input_shape[0], input_shape[1]), name="input_layer")
 
@@ -123,16 +114,11 @@ def create_model(input_shape: Tuple[int, int], num_classes: int) -> keras.Model:
         "output_layer_utt": custom_loss,
     }
 
-    lossWeights = {"output_layer_frame": 1.0, "output_layer_utt": 1.0}
-
-    # metrics = {
-    #     "output_layer_frame": [CustomErrorRateMetric(), "FalsePositives", "FalseNegatives", "TruePositives", "TrueNegatives", "accuracy"],
-    #     "output_layer_utt": ["FalsePositives", "FalseNegatives", "TruePositives", "TrueNegatives", "accuracy", "F1Score"],
-    # }
+    lossWeights = {"output_layer_frame": 1.0, "output_layer_utt": 0.1}
 
     metrics = {
-        "output_layer_frame": [CustomErrorRateMetric()],
-        "output_layer_utt": ["accuracy"],
+        "output_layer_frame": ["precision"],
+        "output_layer_utt": ["f1_score"],
     }
 
     model.compile(optimizer='adam', loss=losses,
@@ -141,78 +127,65 @@ def create_model(input_shape: Tuple[int, int], num_classes: int) -> keras.Model:
     return model
 
 
-def get_layer_outputs(model: keras.Model, inputs: np.ndarray) -> List[np.ndarray]:
+def training(train_csv_path: str, eval_csv_path: str, test_csv_path: str, epochs: int, batch_size: int) -> Tuple[float, float, float]:
     """
-    Get the outputs of all layers in the model for the given inputs.
+    Train the model on the training set and evaluate on the evaluation set.
 
     Args:
-    - model (keras.Model): The original model.
-    - inputs (np.ndarray): The input data.
+    - train_csv_path (str): The path to the training CSV file.
+    - eval_csv_path (str): The path to the evaluation CSV file.
+    - test_csv_path (str): The path to the test CSV file.
+    - epochs (int): The number of epochs to train the model.
+    - batch_size (int): The batch size.
 
     Returns:
-    - List[np.ndarray]: The outputs of each layer.
+    - loss (float): The loss on the test set.
+    - frame_level_precision (float): The frame-level precision on the test set.
+    - utterance_level_f1 (float): The utterance-level F1 score on the test set.
     """
-    layer_outputs = [layer.output for layer in model.layers]
-    intermediate_model = keras.Model(inputs=model.input, outputs=layer_outputs)
-    intermediate_outputs = intermediate_model.predict(inputs)
-    return intermediate_outputs
+    # Load data
+    train_features, train_labels = load_data_from_csv(train_csv_path)
+    eval_features, eval_labels = load_data_from_csv(eval_csv_path)
+    test_features, test_labels = load_data_from_csv(test_csv_path)
 
+    # Determine the maximum sequence length
+    maxlen = max(
+        max(feature.shape[0] for feature in train_features +
+            eval_features + test_features),
+        max(label.shape[0]
+            for label in train_labels + eval_labels + test_labels)
+    )
 
-def print_layer_outputs(layer_outputs: List[np.ndarray]) -> None:
-    """
-    Print the outputs of each layer for debugging.
+    # Create TensorFlow Dataset
+    train_generator = CustomDataGenerator(
+        train_features, train_labels, batch_size, maxlen)
+    eval_generator = CustomDataGenerator(
+        eval_features, eval_labels, batch_size, maxlen)
+    test_generator = CustomDataGenerator(
+        test_features, test_labels, batch_size, maxlen)
 
-    Args:
-    - layer_outputs (List[np.ndarray]): The outputs of each layer.
-    """
-    for i, output in enumerate(layer_outputs):
-        print(f"Layer {i}: {model.layers[i].name}")
-        print(f"Output of layer {i} ({output.shape}):\n{output}")
-        print("-" * 50)
+    # Create and compile the model
+    input_shape = (maxlen, train_features[0].shape[1])
+    num_classes = train_labels[0].shape[1]
+    model = create_model(input_shape, num_classes)
+
+    # Train the model
+    model.fit(train_generator, epochs=epochs, validation_data=eval_generator)
+
+    # Evaluate the model on the test set
+    results = model.evaluate(test_generator)
+    loss = results[0]
+    frame_level_precision = results[1]
+    utterance_level_f1 = results[2]
+
+    return loss, frame_level_precision, utterance_level_f1
 
 
 if __name__ == "__main__":
-    # Define paths
-    features_dir = "data/features/"
-    labels_dir = "data/labels/"
-
-    # Load data
-    features, labels = load_data(features_dir, labels_dir)
-
-    # Determine the maximum sequence length
-    maxlen = max(max(feature.shape[0] for feature in features), max(
-        label.shape[0] for label in labels))
-
-    # Create TensorFlow Dataset
-    batch_size = 64
-    train_generator = CustomDataGenerator(features, labels, batch_size, maxlen)
-
-    # Create the model
-    input_shape = (maxlen, features[0].shape[1])
-    num_classes = labels[0].shape[1]
-    model = create_model(input_shape, num_classes)
-
-    # Show model summary
-    model.summary()
-
-    # '''Test debugging model with one batch of data'''
-    # for batch_features, (batch_labels_frame, batch_labels_utt) in train_dataset.take(1):
-    #     intermediate_outputs = get_layer_outputs(model, batch_features)
-    #     print_layer_outputs(intermediate_outputs)
-
-    #     # Calculate the loss for this batch
-    #     output_frame, output_utt = model(batch_features, training=False)
-    #     loss_frame = custom_loss(batch_labels_frame, output_frame)
-    #     loss_utt = custom_loss(batch_labels_utt, output_utt)
-    #     total_loss = 1.0 * loss_frame + 1.0 * loss_utt
-
-    #     print(f"Frame-level loss: {loss_frame.numpy()}")
-    #     print(f"Utterance-level loss: {loss_utt.numpy()}")
-    #     print(f"Total loss: {total_loss.numpy()}")
-
-    # Train the model
-    model.fit(train_generator, epochs=2)
-    # model.fit(train_dataset, epochs=1, callbacks=[ErrorRateLoggingCallback()])
-
-    # Save the model
-    model.save("speech_error_detection_model.keras")
+    loss, frame_level_precision, utterance_level_f1 = training(
+        "data/metadata/train.csv", "data/metadata/eval.csv", "data/metadata/test.csv", 5, 64)
+    print("Results:")
+    print("--------")
+    print(f"Test loss: {loss:.4f}")
+    print(f"Frame-level precision: {frame_level_precision:.4f}")
+    print(f"Utterance-level F1 score: {utterance_level_f1:.4f}")

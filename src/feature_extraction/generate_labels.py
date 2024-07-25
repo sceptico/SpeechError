@@ -35,6 +35,9 @@ class LabelEncoder:
     """
 
     def __init__(self, config_path: str, annotations_path: str, transcript_dir: str, feature_dir: str, label_dir: str, label_info_dir: str, n_process: int, labels_to_keep: List[str], multi_class: bool = False) -> None:
+        """
+        Initialize the LabelEncoder.
+        """
         self.config_path = config_path
         self.annotations_path = annotations_path
         self.transcript_dir = transcript_dir
@@ -335,9 +338,6 @@ class LabelEncoder:
         file_per_process = (feature_file_length +
                             self.n_process - 1) // self.n_process
 
-        pool = multiprocessing.Pool(processes=self.n_process)
-        results = []
-
         for index in range(self.n_process):
             start_index = index * file_per_process
             end_index = min((index + 1) * file_per_process,
@@ -345,22 +345,10 @@ class LabelEncoder:
 
             if start_index < feature_file_length and start_index < end_index:
                 sub_list = self.label_info[start_index:end_index]
-                result = pool.apply_async(self._generate_labels_for_single_list, args=(
+                process = multiprocessing.Process(target=self._generate_labels_for_single_list, args=(
                     sub_list, index, file_per_process, feature_file_length))
-                results.append(result)
 
-        pool.close()
-        pool.join()
-
-        final_results = [result.get() for result in results]
-        final_results = [item for sublist in final_results for item in sublist]
-
-        label_info_df = pd.DataFrame(final_results, columns=[
-                                     'feature_file', 'start_time', 'end_time', 'label_count'])
-        label_info_path = os.path.join(
-            self.label_info_dir, 'final_label_info.csv')
-        label_info_df.to_csv(label_info_path, index=False)
-        print(f"Final label information saved to {label_info_path}")
+                process.start()
 
 
 def generate_label(config_path: str, annotations_path: str, transcript_dir: str, feature_dir: str, label_dir: str, label_info_dir: str, n_process: int, labels_to_keep: List[str], multi_class: bool) -> None:
