@@ -5,14 +5,13 @@ import tensorflow as tf
 import pandas as pd
 from tensorflow import keras
 from tensorflow.keras import layers
-from typing import Tuple, List
+from typing import Tuple, List, Dict
 import argparse
 
 from Attention import Attention
 from custom_frame_level_loss import custom_frame_level_loss
-from CustomErrorRateMetric import CustomErrorRateMetric
 from CustomDataGenerator import CustomDataGenerator
-from util import pad_sequences
+from CustomF1Score import CustomF1Score
 
 
 def load_data_from_csv(csv_file: str) -> Tuple[List[np.ndarray], List[np.ndarray]]:
@@ -85,7 +84,7 @@ def create_model(input_shape: Tuple[int, int], num_classes: int) -> keras.Model:
 
     # Frame-level prediction output layer
     output_frame = layers.Dense(
-        num_classes, activation='sigmoid', name="output_layer_frame")(dense_layer_frame)
+        num_classes, activation='sigmoid', name="frame")(dense_layer_frame)
     # Input: (batch_size, timesteps, 64)
     # Output: (batch_size, timesteps, num_classes)
 
@@ -102,28 +101,39 @@ def create_model(input_shape: Tuple[int, int], num_classes: int) -> keras.Model:
 
     # Utterance-level output layer
     output_utt = layers.Dense(
-        num_classes, activation='sigmoid', name="output_layer_utt")(dense_layer_utt)
+        num_classes, activation='sigmoid', name="utt")(dense_layer_utt)
     # Input: (batch_size, 64)
     # Output: (batch_size, num_classes)
 
     model = keras.Model(inputs=inputs, outputs=[output_frame, output_utt])
 
-    # Define custom loss function
-    # losses = {
-    #     "output_layer_frame": custom_loss,
-    #     "output_layer_utt": custom_loss,
-    # }
-
     losses = {
-        "output_layer_frame": custom_frame_level_loss,
-        "output_layer_utt": "binary_crossentropy",
+        "frame": custom_frame_level_loss,
+        "utt": "binary_crossentropy",
     }
 
-    lossWeights = {"output_layer_frame": 1.0, "output_layer_utt": 1.0}
+    lossWeights = {
+        "frame": 1.0,
+        "utt": 1.0,
+    }
 
     metrics = {
-        "output_layer_frame": ["precision", "f1_score", "AUC"],
-        "output_layer_utt": ["f1_score"],
+        "frame": [
+            tf.keras.metrics.TruePositives(name='tp'),
+            tf.keras.metrics.FalsePositives(name='fp'),
+            tf.keras.metrics.TrueNegatives(name='tn'),
+            tf.keras.metrics.FalseNegatives(name='fn'),
+            tf.keras.metrics.Precision(name='precision'),
+            CustomF1Score(name='f1_score'),
+            tf.keras.metrics.AUC(name='auc'),],
+        "utt": [
+            tf.keras.metrics.F1Score(name='f1_score'),
+            tf.keras.metrics.AUC(name='auc'),
+            tf.keras.metrics.TruePositives(name='tp'),
+            tf.keras.metrics.FalsePositives(name='fp'),
+            tf.keras.metrics.TrueNegatives(name='tn'),
+            tf.keras.metrics.FalseNegatives(name='fn'),
+        ],
     }
 
     model.compile(optimizer='adam', loss=losses,
@@ -132,7 +142,7 @@ def create_model(input_shape: Tuple[int, int], num_classes: int) -> keras.Model:
     return model
 
 
-def training(train_csv_path: str, eval_csv_path: str, test_csv_path: str, epochs: int, batch_size: int) -> Tuple[float, float, float]:
+def training(train_csv_path: str, eval_csv_path: str, test_csv_path: str, epochs: int, batch_size: int) -> Tuple[Dict[str, float], Dict[str, List[float]]]:
     """
     Train the model on the training set and evaluate on the evaluation set.
 
@@ -144,9 +154,8 @@ def training(train_csv_path: str, eval_csv_path: str, test_csv_path: str, epochs
     - batch_size (int): The batch size.
 
     Returns:
-    - loss (float): The loss on the test set.
-    - frame_level_precision (float): The frame-level precision on the test set.
-    - utterance_level_f1 (float): The utterance-level F1 score on the test set.
+    - results (Dict[str, float]): The evaluation results on the test set.
+    - history (Dict[str, List[float]]): The training history.
     """
     # Load data
     train_features, train_labels = load_data_from_csv(train_csv_path)
@@ -177,50 +186,85 @@ def training(train_csv_path: str, eval_csv_path: str, test_csv_path: str, epochs
     model.summary()
 
     # Train the model
-    model.fit(train_generator, epochs=epochs, validation_data=eval_generator)
+    history = model.fit(train_generator, epochs=epochs,
+                        validation_data=eval_generator)
 
     # Evaluate the model on the test set
-    results = model.evaluate(test_generator)
-    loss = results[0]
-    frame_level_precision = results[1]
-    utterance_level_f1 = results[2]
+    results = model.evaluate(test_generator, return_dict=True)
 
     # Sample Prediction
     sample = test_generator[0]
     frame_pred, utt_pred = model.predict(sample[0])
     print("Frame-level prediction:")
-    print(frame_pred)
+    print("-----------------------")
+    print(frame_pred.flatten())
+    print()
     print("Utterance-level prediction:")
-    print(utt_pred)
+    print("---------------------------")
+    print(utt_pred.flatten())
+    print()
 
-    return loss, frame_level_precision, utterance_level_f1
+    frame_classification = np.where(frame_pred > 0.5, 1, 0)
+    utt_classification = np.where(utt_pred > 0.5, 1, 0)
+
+    print("Frame-level classification:")
+    print("---------------------------")
+    frame_1_count = np.count_nonzero(frame_classification == 1)
+    frame_0_count = np.count_nonzero(frame_classification == 0)
+    print(f"1: {frame_1_count}, 0: {frame_0_count}")
+    print()
+    print("Utterance-level classification:")
+    print("-------------------------------")
+    print(utt_classification.flatten())
+    print()
+
+    return results, history.history
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train the model.")
+    parser.add_argument("--model_name", type=str,
+                        default="experiment", help="Name of the experiment")
     parser.add_argument("--train_csv_path", type=str,
                         required=True, help="Path to the training CSV file")
     parser.add_argument("--eval_csv_path", type=str,
                         required=True, help="Path to the evaluation CSV file")
     parser.add_argument("--test_csv_path", type=str,
                         required=True, help="Path to the test CSV file")
+    parser.add_argument("--log_dir", type=str,
+                        required=True, help="Directory to save logs and models")
     parser.add_argument("--epochs", type=int,
                         default=50, help="Number of epochs")
     parser.add_argument("--batch_size", type=int,
                         default=64, help="Batch size")
 
     args = parser.parse_args()
+    model_name = args.model_name
     train_csv_path = args.train_csv_path
     eval_csv_path = args.eval_csv_path
     test_csv_path = args.test_csv_path
+    log_dir = args.log_dir
     epochs = args.epochs
     batch_size = args.batch_size
 
-    loss, frame_level_precision, utterance_level_f1 = training(
+    results, history = training(
         train_csv_path, eval_csv_path, test_csv_path, epochs, batch_size)
 
     print("Results on the test set:")
     print("------------------------")
-    print(f"Test loss: {loss:.4f}")
-    print(f"Frame-level precision: {frame_level_precision:.4f}")
-    print(f"Utterance-level F1 score: {utterance_level_f1:.4f}")
+    for key, value in results.items():
+        print(f"{key}: {value}")
+    print()
+
+    # Save the training log and results to CSV files
+    log = pd.DataFrame(history)
+    log['epoch'] = range(1, len(log['loss']) + 1)
+    cols = log.columns.tolist()
+    cols = cols[-1:] + cols[:-1]
+    log = log[cols]
+    log_path = os.path.join(log_dir, f"{model_name}_log.csv")
+    log.to_csv(log_path, index=False)
+
+    results = pd.DataFrame(results, index=[0])
+    results_path = os.path.join(log_dir, f"{model_name}_results.csv")
+    results.to_csv(results_path, index=False)

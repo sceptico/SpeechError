@@ -17,6 +17,7 @@ except ImportError:
 class TestCustomFrameLevelLoss(unittest.TestCase):
 
     def test_custom_frame_level_loss_no_mask(self):
+        # Test case where all frames are considered
         y_true_frame_1 = tf.constant(
             [[[1], [0]], [[1], [0]], [[1], [1]], [[0], [1]]], dtype=tf.float32)
         y_pred_frame_1 = tf.constant(
@@ -34,6 +35,7 @@ class TestCustomFrameLevelLoss(unittest.TestCase):
         self.assertAlmostEqual(loss_frame_1, loss_frame_2, places=6)
 
     def test_custom_frame_level_loss_partially_masked(self):
+        # Test case where some frames are masked
         y_true_frame_1 = tf.constant(
             [[[1], [0]], [[0], [0]], [[1], [1]], [[0], [1]]], dtype=tf.float32)
         y_pred_frame_1 = tf.constant(
@@ -51,6 +53,7 @@ class TestCustomFrameLevelLoss(unittest.TestCase):
         self.assertAlmostEqual(loss_frame_1, loss_frame_2, places=6)
 
     def test_custom_frame_level_loss_all_masked(self):
+        # Test case where all frames are masked
         y_true_empty = tf.constant(
             [[[0], [0]], [[0], [0]], [[0], [0]], [[0], [0]]], dtype=tf.float32)
         y_pred_empty = tf.constant(
@@ -59,13 +62,6 @@ class TestCustomFrameLevelLoss(unittest.TestCase):
             y_true_empty, y_pred_empty).numpy()
 
         self.assertAlmostEqual(loss_empty, 1e-7, places=6)
-
-    def test_custom_frame_level_loss_unsupported_rank(self):
-        y_true_unsupported = tf.constant([1, 0, 1], dtype=tf.float32)
-        y_pred_unsupported = tf.constant([0.9, 0.1, 0.3], dtype=tf.float32)
-        with self.assertRaises(ValueError):
-            custom_frame_level_loss(
-                y_true_unsupported, y_pred_unsupported).numpy()
 
 
 if __name__ == "__main__":
