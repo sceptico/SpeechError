@@ -9,7 +9,7 @@ from typing import Tuple, List
 import argparse
 
 from Attention import Attention
-from custom_loss import custom_loss
+from custom_frame_level_loss import custom_frame_level_loss
 from CustomErrorRateMetric import CustomErrorRateMetric
 from CustomDataGenerator import CustomDataGenerator
 from util import pad_sequences
@@ -67,26 +67,26 @@ def create_model(input_shape: Tuple[int, int], num_classes: int) -> keras.Model:
 
     # First LSTM layer
     lstm_layer_1 = layers.LSTM(
-        32, return_sequences=True, name="lstm_layer_1")(mask)
+        64, return_sequences=True, name="lstm_layer_1")(mask)
     # Input: (batch_size, timesteps, features)
-    # Output: (batch_size, timesteps, 32)
+    # Output: (batch_size, timesteps, 64)
 
     # Second LSTM layer
     lstm_layer_2 = layers.LSTM(
-        32, return_sequences=True, name="lstm_layer_2")(lstm_layer_1)
-    # Input: (batch_size, timesteps, 32)
-    # Output: (batch_size, timesteps, 32)
+        64, return_sequences=True, name="lstm_layer_2")(lstm_layer_1)
+    # Input: (batch_size, timesteps, 64)
+    # Output: (batch_size, timesteps, 64)
 
     # Frame-level prediction dense layer
     dense_layer_frame = layers.Dense(
-        32, activation='relu', name="dense_layer_frame")(lstm_layer_2)
-    # Input: (batch_size, timesteps, 32)
-    # Output: (batch_size, timesteps, 32)
+        64, activation='relu', name="dense_layer_frame")(lstm_layer_2)
+    # Input: (batch_size, timesteps, 64)
+    # Output: (batch_size, timesteps, 64)
 
     # Frame-level prediction output layer
     output_frame = layers.Dense(
         num_classes, activation='sigmoid', name="output_layer_frame")(dense_layer_frame)
-    # Input: (batch_size, timesteps, 32)
+    # Input: (batch_size, timesteps, 64)
     # Output: (batch_size, timesteps, num_classes)
 
     # Attention mechanism for utterance-level prediction
@@ -96,28 +96,33 @@ def create_model(input_shape: Tuple[int, int], num_classes: int) -> keras.Model:
 
     # Utterance-level dense layer
     dense_layer_utt = layers.Dense(
-        32, activation='relu', name="dense_layer_utt")(attention_layer)
+        64, activation='relu', name="dense_layer_utt")(attention_layer)
     # Input: (batch_size, num_classes)
-    # Output: (batch_size, 32)
+    # Output: (batch_size, 64)
 
     # Utterance-level output layer
     output_utt = layers.Dense(
         num_classes, activation='sigmoid', name="output_layer_utt")(dense_layer_utt)
-    # Input: (batch_size, 32)
+    # Input: (batch_size, 64)
     # Output: (batch_size, num_classes)
 
     model = keras.Model(inputs=inputs, outputs=[output_frame, output_utt])
 
     # Define custom loss function
+    # losses = {
+    #     "output_layer_frame": custom_loss,
+    #     "output_layer_utt": custom_loss,
+    # }
+
     losses = {
-        "output_layer_frame": custom_loss,
-        "output_layer_utt": custom_loss,
+        "output_layer_frame": custom_frame_level_loss,
+        "output_layer_utt": "binary_crossentropy",
     }
 
-    lossWeights = {"output_layer_frame": 1.0, "output_layer_utt": 0.1}
+    lossWeights = {"output_layer_frame": 1.0, "output_layer_utt": 1.0}
 
     metrics = {
-        "output_layer_frame": ["precision"],
+        "output_layer_frame": ["precision", "f1_score", "AUC"],
         "output_layer_utt": ["f1_score"],
     }
 
@@ -169,6 +174,8 @@ def training(train_csv_path: str, eval_csv_path: str, test_csv_path: str, epochs
     num_classes = train_labels[0].shape[1]
     model = create_model(input_shape, num_classes)
 
+    model.summary()
+
     # Train the model
     model.fit(train_generator, epochs=epochs, validation_data=eval_generator)
 
@@ -177,6 +184,14 @@ def training(train_csv_path: str, eval_csv_path: str, test_csv_path: str, epochs
     loss = results[0]
     frame_level_precision = results[1]
     utterance_level_f1 = results[2]
+
+    # Sample Prediction
+    sample = test_generator[0]
+    frame_pred, utt_pred = model.predict(sample[0])
+    print("Frame-level prediction:")
+    print(frame_pred)
+    print("Utterance-level prediction:")
+    print(utt_pred)
 
     return loss, frame_level_precision, utterance_level_f1
 
