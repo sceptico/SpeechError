@@ -195,6 +195,7 @@ def training(train_csv_path: str, eval_csv_path: str, test_csv_path: str, epochs
     # Sample Prediction
     sample = test_generator[0]
     frame_pred, utt_pred = model.predict(sample[0])
+    print()
     print("Frame-level prediction:")
     print("-----------------------")
     print(frame_pred.flatten())
@@ -211,7 +212,8 @@ def training(train_csv_path: str, eval_csv_path: str, test_csv_path: str, epochs
     print("---------------------------")
     frame_1_count = np.count_nonzero(frame_classification == 1)
     frame_0_count = np.count_nonzero(frame_classification == 0)
-    print(f"1: {frame_1_count}, 0: {frame_0_count}")
+    print(f"1: {frame_1_count}")
+    print(f"0: {frame_0_count}")
     print()
     print("Utterance-level classification:")
     print("-------------------------------")

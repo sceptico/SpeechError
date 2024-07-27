@@ -2,7 +2,7 @@ TRAIN_CSV_PATH=data/metadata/train.csv
 EVAL_CSV_PATH=data/metadata/eval.csv
 TEST_CSV_PATH=data/metadata/test.csv
 LOG_DIR=logs
-EPOCHS=2
+EPOCHS=30
 BATCH_SIZE=64
 MODEL_NAME=baseline
 
