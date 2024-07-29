@@ -7,6 +7,7 @@ from tensorflow import keras
 from tensorflow.keras import layers
 from typing import Tuple, List, Dict
 import argparse
+import configparser
 
 from Attention import Attention
 from custom_frame_level_loss import custom_frame_level_loss
@@ -42,7 +43,7 @@ def load_data_from_csv(csv_file: str) -> Tuple[List[np.ndarray], List[np.ndarray
     return features, labels
 
 
-def create_model(input_shape: Tuple[int, int], num_classes: int) -> keras.Model:
+def create_model(input_shape: Tuple[int, int], num_classes: int, frame_loss_function: str, utt_loss_function: str, frame_to_utt_loss_ratio: float, optimizer: str, learning_rate: float) -> keras.Model:
     """
     Create the model.
 
@@ -52,6 +53,11 @@ def create_model(input_shape: Tuple[int, int], num_classes: int) -> keras.Model:
     Args:
     - input_shape (Tuple[int, int]): The input shape of the model.
     - num_classes (int): The number of classes.
+    - frame_loss_function (str): The frame-level loss function.
+    - utt_loss_function (str): The utterance-level loss function.
+    - frame_to_utt_loss_ratio (float): The ratio of frame-level loss to utterance-level loss.
+    - optimizer (str): The optimizer.
+    - learning_rate (float): The learning rate.
 
     Returns:
     - model (keras.Model): The compiled model.
@@ -107,14 +113,17 @@ def create_model(input_shape: Tuple[int, int], num_classes: int) -> keras.Model:
 
     model = keras.Model(inputs=inputs, outputs=[output_frame, output_utt])
 
+    frame_loss_function = custom_frame_level_loss if frame_loss_function == "custom_frame_level_loss" else "binary_crossentropy"
+    utt_loss_function = custom_frame_level_loss if utt_loss_function == "custom_frame_level_loss" else "binary_crossentropy"
+
     losses = {
-        "frame": custom_frame_level_loss,
-        "utt": "binary_crossentropy",
+        "frame": frame_loss_function,
+        "utt": utt_loss_function,
     }
 
     lossWeights = {
         "frame": 1.0,
-        "utt": 1.0,
+        "utt": frame_to_utt_loss_ratio,
     }
 
     metrics = {
@@ -136,13 +145,17 @@ def create_model(input_shape: Tuple[int, int], num_classes: int) -> keras.Model:
         ],
     }
 
-    model.compile(optimizer='adam', loss=losses,
-                  loss_weights=lossWeights, metrics=metrics)
+    model.compile(
+        optimizer=optimizer,
+        loss=losses,
+        loss_weights=lossWeights,
+        metrics=metrics
+    )
 
     return model
 
 
-def training(train_csv_path: str, eval_csv_path: str, test_csv_path: str, epochs: int, batch_size: int) -> Tuple[Dict[str, float], Dict[str, List[float]]]:
+def training(**kwargs) -> Tuple[Dict[str, float], Dict[str, List[float]]]:
     """
     Train the model on the training set and evaluate on the evaluation set.
 
@@ -150,14 +163,39 @@ def training(train_csv_path: str, eval_csv_path: str, test_csv_path: str, epochs
     - train_csv_path (str): The path to the training CSV file.
     - eval_csv_path (str): The path to the evaluation CSV file.
     - test_csv_path (str): The path to the test CSV file.
+    - frame_loss_function (str): The frame-level loss function.
+    - utt_loss_function (str): The utterance-level loss function.
+    - frame_to_utt_loss_ratio (float): The ratio of frame-level loss to utterance-level loss.
+    - optimizer = (str): The optimizer.
+    - learning_rate (float): The learning rate.
     - epochs (int): The number of epochs to train the model.
     - batch_size (int): The batch size.
 
     Returns:
     - results (Dict[str, float]): The evaluation results on the test set.
     - history (Dict[str, List[float]]): The training history.
+
+    Raises:
+    - FileNotFoundError: If the CSV file is not found.
     """
+    # Unpack the keyword arguments
+    train_csv_path = kwargs["train_csv_path"] if "train_csv_path" in kwargs else None
+    eval_csv_path = kwargs["eval_csv_path"] if "eval_csv_path" in kwargs else None
+    test_csv_path = kwargs["test_csv_path"] if "test_csv_path" in kwargs else None
+    frame_loss_function = kwargs["frame_loss_function"] if "frame_loss_function" in kwargs else "binary_crossentropy"
+    utt_loss_function = kwargs["utt_loss_function"] if "utt_loss_function" in kwargs else "binary_crossentropy"
+    frame_to_utt_loss_ratio = float(
+        kwargs["frame_to_utt_loss_ratio"]) if "frame_to_utt_loss_ratio" in kwargs else 1.0
+    optimizer = kwargs["optimizer"] if "optimizer" in kwargs else "adam"
+    learning_rate = float(kwargs["learning_rate"]
+                          ) if "learning_rate" in kwargs else 0.001
+    epochs = int(kwargs["epochs"]) if "epochs" in kwargs else 10
+    batch_size = int(kwargs["batch_size"]) if "batch_size" in kwargs else 32
+
     # Load data
+    for path in [train_csv_path, eval_csv_path, test_csv_path]:
+        if not os.path.exists(path):
+            raise FileNotFoundError(f"File not found: {path}")
     train_features, train_labels = load_data_from_csv(train_csv_path)
     eval_features, eval_labels = load_data_from_csv(eval_csv_path)
     test_features, test_labels = load_data_from_csv(test_csv_path)
@@ -181,7 +219,8 @@ def training(train_csv_path: str, eval_csv_path: str, test_csv_path: str, epochs
     # Create and compile the model
     input_shape = (maxlen, train_features[0].shape[1])
     num_classes = train_labels[0].shape[1]
-    model = create_model(input_shape, num_classes)
+    model = create_model(input_shape, num_classes, frame_loss_function,
+                         utt_loss_function, frame_to_utt_loss_ratio, optimizer, learning_rate)
 
     model.summary()
 
@@ -223,34 +262,53 @@ def training(train_csv_path: str, eval_csv_path: str, test_csv_path: str, epochs
     return results, history.history
 
 
+def parse_config(config_path: str) -> Dict[str, str]:
+    """
+    Parse the configuration file.
+
+    Args:
+    - config_path (str): The path to the configuration file.
+
+    Returns:
+    - config (Dict[str, str]): The configuration parameters.
+    """
+    config = configparser.ConfigParser()
+    config.read(config_path)
+
+    dict_config = {}
+    for section in config.sections():
+        dict_config[section] = dict(config.items(section))
+
+    return dict_config
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train the model.")
-    parser.add_argument("--model_name", type=str,
-                        default="experiment", help="Name of the experiment")
-    parser.add_argument("--train_csv_path", type=str,
-                        required=True, help="Path to the training CSV file")
-    parser.add_argument("--eval_csv_path", type=str,
-                        required=True, help="Path to the evaluation CSV file")
-    parser.add_argument("--test_csv_path", type=str,
-                        required=True, help="Path to the test CSV file")
-    parser.add_argument("--log_dir", type=str,
-                        required=True, help="Directory to save logs and models")
-    parser.add_argument("--epochs", type=int,
-                        default=50, help="Number of epochs")
-    parser.add_argument("--batch_size", type=int,
-                        default=64, help="Batch size")
+    parser.add_argument("config_path", type=str, default="training_default.cfg",
+                        help="The path to the configuration file.")
+    config_path = parser.parse_args().config_path
 
-    args = parser.parse_args()
-    model_name = args.model_name
-    train_csv_path = args.train_csv_path
-    eval_csv_path = args.eval_csv_path
-    test_csv_path = args.test_csv_path
-    log_dir = args.log_dir
-    epochs = args.epochs
-    batch_size = args.batch_size
+    config = parse_config(config_path)
 
-    results, history = training(
-        train_csv_path, eval_csv_path, test_csv_path, epochs, batch_size)
+    training_config = config["training"]
+    log_config = config["log"]
+
+    print("Training configuration:")
+    print("-----------------------")
+    for key, value in training_config.items():
+        print(f"{key}: {value}")
+    print()
+
+    print("Log configuration:")
+    print("------------------")
+    for key, value in log_config.items():
+        print(f"{key}: {value}")
+    print()
+
+    results, history = training(**training_config)
+
+    model_name = log_config["model_name"]
+    log_dir = log_config["log_dir"]
 
     print("Results on the test set:")
     print("------------------------")
