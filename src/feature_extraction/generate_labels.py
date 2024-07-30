@@ -53,6 +53,7 @@ class LabelEncoder:
         self.hop_length_seconds = None
         self.feature_file_list = []
         self.transcript_file_list = []
+        self.transcripts_dict = {}
         self.label_info = []
 
         self._init_config()
@@ -91,7 +92,6 @@ class LabelEncoder:
             raise FileNotFoundError(
                 f"Feature directory not found at {self.feature_dir}")
 
-        self.feature_file_list = []
         for root, _, files in os.walk(self.feature_dir):
             for file in files:
                 if file.endswith('.npy'):
@@ -100,22 +100,42 @@ class LabelEncoder:
 
     def _compile_list_of_transcript_files(self) -> None:
         """
-        Compile a list of transcript files from the specified directory.
+        Compile a dictionary of transcript files from the specified directory,
+        where each key is an audio file name and the value is a list of tuples
+        (start_time, end_time) representing transcript segments.
 
         Raises:
         - FileNotFoundError: If the transcript directory is not found.
         """
-        print("Compiling list of transcript files...")
+        print("Compiling transcript data...")
         if not os.path.exists(self.transcript_dir):
             raise FileNotFoundError(
                 f"Transcript directory not found at {self.transcript_dir}")
 
-        self.transcript_file_list = []
         for root, _, files in os.walk(self.transcript_dir):
             for file in files:
                 if file.endswith('.csv'):
-                    print(f"Processing {file}")
-                    self.transcript_file_list.append(os.path.join(root, file))
+                    print(f"    Processing {file}")
+                    file_path = os.path.join(root, file)
+                    audio_file_name = os.path.splitext(
+                        os.path.basename(file))[0]
+
+                    with open(file_path, 'r', encoding='utf-8') as f:
+                        reader = csv.reader(f)
+                        next(reader)  # Skip header
+                        segment_number = 0
+                        for row in reader:
+                            segment_number += 1
+                            start_time = float(row[0])
+                            end_time = float(row[1])
+                            feature_file_name = f"{audio_file_name}_{segment_number:04}.npy"
+                            feature_file_path = os.path.join(
+                                self.feature_dir, feature_file_name)
+                            self.transcripts_dict[feature_file_path] = (
+                                start_time, end_time)
+
+        print(
+            f"Transcript data compiled for {len(self.transcripts_dict)} files.")
 
     def _sort_dataset_by_segment(self) -> None:
         """
@@ -154,60 +174,26 @@ class LabelEncoder:
                     f'{column} not found in the annotations file.')
 
         label_info = []
-        feature_dict = {}
 
         print("    Compiling label information...")
         for feature_file in self.feature_file_list:
-            label_file_name = os.path.basename(
-                feature_file).replace('.npy', '_labels.npy')
-            label_file = os.path.join(self.label_dir, label_file_name)
-            label_info.append({
-                "feature_file": feature_file,
-                "label_file": label_file,
-                "start_time": 0,
-                "end_time": 0,
-                "label_list": [],
-                "label_count": 0
-            })
+            print(f"    Processing {feature_file}")
+            if feature_file in self.transcripts_dict:
+                start_time, end_time = self.transcripts_dict[feature_file]
+                label_file_name = os.path.basename(feature_file).replace(
+                    '.npy', f'_labels.npy')
+                label_file_path = os.path.join(
+                    self.label_dir, label_file_name)
+                label_info.append({
+                    "feature_file": feature_file,
+                    "label_file": label_file_path,
+                    "start_time": start_time,
+                    "end_time": end_time,
+                    "label_list": [],
+                    "label_count": 0
+                })
 
-            feature_file_name = os.path.basename(feature_file)
-            parts = feature_file_name.rsplit('_', 1)
-            audio_file_name = parts[0]
-            segment_number = int(parts[1].replace('.npy', ''))
-
-            feature_dict.setdefault(audio_file_name, []).append({
-                "feature_file": feature_file,
-                "segment_number": segment_number - 1,
-                "start_time": 0,
-                "end_time": 0
-            })
-
-        print("    Matching segments with transcripts...")
-        for feature_audio_file, segments in feature_dict.items():
-            transcript_file = None
-            for file in self.transcript_file_list:
-                if feature_audio_file in file:
-                    transcript_file = file
-                    break
-
-            if transcript_file is None:
-                raise FileNotFoundError(
-                    f"Transcript file not found for {feature_audio_file}")
-
-            with open(transcript_file, 'r', encoding='utf-8') as f:
-                reader = csv.reader(f)
-                next(reader)
-                for row in reader:
-                    for segment in segments:
-                        if reader.line_num - 2 == segment["segment_number"]:
-                            segment["start_time"] = float(row[0])
-                            segment["end_time"] = float(row[1])
-                            for item in label_info:
-                                if item['feature_file'] == segment["feature_file"]:
-                                    item['start_time'] = segment["start_time"]
-                                    item['end_time'] = segment["end_time"]
-                                    break
-
+        print("    Matching labels to feature files...")
         for index, row in annotations.iterrows():
             print(f"    Processing annotation {index + 1}/{len(annotations)}")
             audio_file = os.path.basename(row['file']).split('.')[0]
@@ -215,44 +201,50 @@ class LabelEncoder:
             end_time = row['end']
             label = row['label']
 
-            if audio_file in feature_dict:
-                for segment in feature_dict[audio_file]:
-                    feature_start_time = segment["start_time"]
-                    feature_end_time = segment["end_time"]
-                    feature_file = segment["feature_file"]
+            # Find all feature files that contain the audio file
+            file_list = []
+            for feature_file in self.feature_file_list:
+                if audio_file in feature_file:
+                    file_list.append(feature_file)
 
-                    if start_time >= feature_start_time and end_time <= feature_end_time:
-                        label_start_time = start_time
-                        label_end_time = end_time
-                        for item in label_info:
-                            if item['feature_file'] == feature_file:
-                                item['label_list'].append(
-                                    (label_start_time, label_end_time, label))
-                                item['label_count'] += 1
-                                break
-                        break
+            for feature_file in file_list:
+                feature_start_time, feature_end_time = self.transcripts_dict[feature_file]
 
-                    elif start_time >= feature_start_time and start_time < feature_end_time and end_time > feature_end_time:
-                        label_start_time = start_time
-                        label_end_time = feature_end_time
-                        for item in label_info:
-                            if item['feature_file'] == feature_file:
-                                item['label_list'].append(
-                                    (label_start_time, label_end_time, label))
-                                item['label_count'] += 1
-                                break
-                        break
+                # Check if the label falls entirely within the segment
+                if start_time >= feature_start_time and end_time <= feature_end_time:
+                    label_start_time = start_time
+                    label_end_time = end_time
+                    for item in label_info:
+                        if item['feature_file'] == feature_file:
+                            item['label_list'].append(
+                                (label_start_time, label_end_time, label))
+                            item['label_count'] += 1
+                            break
+                    break
 
-                    elif start_time < feature_start_time and end_time <= feature_end_time and end_time > feature_start_time:
-                        label_start_time = feature_start_time
-                        label_end_time = end_time
-                        for item in label_info:
-                            if item['feature_file'] == feature_file:
-                                item['label_list'].append(
-                                    (label_start_time, label_end_time, label))
-                                item['label_count'] += 1
-                                break
-                        break
+                # Check if the label starts within the segment and ends after the segment
+                elif start_time >= feature_start_time and start_time < feature_end_time and end_time > feature_end_time:
+                    label_start_time = start_time
+                    label_end_time = feature_end_time
+                    for item in label_info:
+                        if item['feature_file'] == feature_file:
+                            item['label_list'].append(
+                                (label_start_time, label_end_time, label))
+                            item['label_count'] += 1
+                            break
+                    break
+
+                # Check if the label starts before the segment and ends within the segment
+                elif start_time < feature_start_time and end_time <= feature_end_time and end_time > feature_start_time:
+                    label_start_time = feature_start_time
+                    label_end_time = end_time
+                    for item in label_info:
+                        if item['feature_file'] == feature_file:
+                            item['label_list'].append(
+                                (label_start_time, label_end_time, label))
+                            item['label_count'] += 1
+                            break
+                    break
 
         self.label_info = label_info
         label_info_df = pd.DataFrame(label_info)
@@ -278,6 +270,7 @@ class LabelEncoder:
         num_classes = len(self.labels_to_keep) if self.multi_class else 1
 
         for sub_list_index, feature_file in enumerate(list_feature_files):
+            print(f"    Generating labels for {feature_file['label_file']}")
             feature_file = feature_file['feature_file']
             feature_file_name = os.path.basename(feature_file)
             parts = feature_file_name.rsplit('_', 1)
@@ -323,6 +316,7 @@ class LabelEncoder:
                         labels[label_start_index:label_end_index, 0] = 1
 
             np.save(label_file, labels)
+            # print(f"    {label_file} saved")
 
             results.append((feature_file, start_time,
                            item['end_time'], item['label_count']))

@@ -54,8 +54,7 @@ This pulls the Docker image and converts it to a Singularity image `speech-error
 
 1. Use GPU from Northereastern's Discovery cluster:
 
-(see https://github.com/SlangLab-NU/links/wiki/
-Working-with-sbatch-and-srun-on-the-cluster-with-GPU-nodes)
+(see https://github.com/SlangLab-NU/links/wiki/Working-with-sbatch-and-srun-on-the-cluster-with-GPU-nodes)
 
 `srun --partition=gpu --nodes=1 --gres=gpu:t4:1 --time=08:00:00 --pty /bin/bash`
 
