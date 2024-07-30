@@ -9,6 +9,7 @@ ANNOTATIONS_PATH=data/metadata/dataset.csv
 LABEL_INFO_DIR=data/metadata
 
 # Generate features
+echo "Running generate_features.py"
 if [ ! -d $FEATURE_DIR ]; then
     mkdir -p $FEATURE_DIR
 fi
@@ -16,6 +17,7 @@ fi
 python3 src/feature_extraction/generate_features.py --wav_list $WAVE_LIST --wav_dir $WAVE_DIR --transcript_dir $TRANSCRIPT_DIR --feature_dir $FEATURE_DIR --feature_config $FEATURE_CONFIG --n_process $PROCESS_NUM
 
 # Generate labels
+echo "Running generate_labels.py"
 if [ ! -d $LABEL_DIR ]; then
     mkdir -p $LABEL_DIR
 fi

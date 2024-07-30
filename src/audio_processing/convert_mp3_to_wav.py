@@ -43,10 +43,15 @@ def convert_mp3_to_wav(audio_dir: str, output_dir: str, sample_rate: int) -> Non
                     continue
 
                 # Load the .mp3 file
-                y, sr = librosa.load(input_path, sr=sample_rate)
+                try:
+                    y, sr = librosa.load(input_path, sr=sample_rate)
 
-                # Save as .wav file
-                sf.write(output_path, y, sample_rate)
+                    # Save as .wav file
+                    sf.write(output_path, y, sample_rate)
+                except Exception as e:
+                    print(f'Error converting {input_path}: {e}')
+                    continue
+
                 print(f'Converted {input_path} to {output_path}.')
 
 

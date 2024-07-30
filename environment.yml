@@ -1,6 +1,5 @@
 name: error_classification
 channels:
-  - defaults
   - conda-forge
 dependencies:
   - python=3.10
@@ -11,5 +10,6 @@ dependencies:
   - soundfile
   - audioread
   - pandas
+  - configparser
   - tensorflow
   - keras

@@ -1,0 +1,10 @@
+numpy<2
+librosa
+soxr
+scipy
+soundfile
+audioread
+pandas
+configparser
+tensorflow
+keras

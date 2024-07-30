@@ -86,6 +86,7 @@ class LabelEncoder:
         Raises:
         - FileNotFoundError: If the feature directory is not found.
         """
+        print("Compiling list of feature files...")
         if not os.path.exists(self.feature_dir):
             raise FileNotFoundError(
                 f"Feature directory not found at {self.feature_dir}")
@@ -94,6 +95,7 @@ class LabelEncoder:
         for root, _, files in os.walk(self.feature_dir):
             for file in files:
                 if file.endswith('.npy'):
+                    print(f"Processing {file}")
                     self.feature_file_list.append(os.path.join(root, file))
 
     def _compile_list_of_transcript_files(self) -> None:
@@ -103,6 +105,7 @@ class LabelEncoder:
         Raises:
         - FileNotFoundError: If the transcript directory is not found.
         """
+        print("Compiling list of transcript files...")
         if not os.path.exists(self.transcript_dir):
             raise FileNotFoundError(
                 f"Transcript directory not found at {self.transcript_dir}")
@@ -111,6 +114,7 @@ class LabelEncoder:
         for root, _, files in os.walk(self.transcript_dir):
             for file in files:
                 if file.endswith('.csv'):
+                    print(f"Processing {file}")
                     self.transcript_file_list.append(os.path.join(root, file))
 
     def _sort_dataset_by_segment(self) -> None:
@@ -152,6 +156,7 @@ class LabelEncoder:
         label_info = []
         feature_dict = {}
 
+        print("    Compiling label information...")
         for feature_file in self.feature_file_list:
             label_file_name = os.path.basename(
                 feature_file).replace('.npy', '_labels.npy')
@@ -177,6 +182,7 @@ class LabelEncoder:
                 "end_time": 0
             })
 
+        print("    Matching segments with transcripts...")
         for feature_audio_file, segments in feature_dict.items():
             transcript_file = None
             for file in self.transcript_file_list:
@@ -203,7 +209,7 @@ class LabelEncoder:
                                     break
 
         for index, row in annotations.iterrows():
-            print(f"Processing annotation {index + 1}/{len(annotations)}")
+            print(f"    Processing annotation {index + 1}/{len(annotations)}")
             audio_file = os.path.basename(row['file']).split('.')[0]
             start_time = row['start']
             end_time = row['end']
@@ -252,7 +258,7 @@ class LabelEncoder:
         label_info_df = pd.DataFrame(label_info)
         label_info_path = os.path.join(self.label_info_dir, 'label_info.csv')
         label_info_df.to_csv(label_info_path, index=False)
-        print(f"Label information saved to {label_info_path}")
+        print(f"    Label information saved to {label_info_path}")
 
     def _generate_labels_for_single_list(self, list_feature_files: List[str], index: int, file_per_process: int, feature_file_length: int) -> List[Tuple[str, float, float, int]]:
         """
@@ -272,7 +278,6 @@ class LabelEncoder:
         num_classes = len(self.labels_to_keep) if self.multi_class else 1
 
         for sub_list_index, feature_file in enumerate(list_feature_files):
-            current_index = index * file_per_process + sub_list_index
             feature_file = feature_file['feature_file']
             feature_file_name = os.path.basename(feature_file)
             parts = feature_file_name.rsplit('_', 1)
@@ -338,6 +343,7 @@ class LabelEncoder:
         file_per_process = (feature_file_length +
                             self.n_process - 1) // self.n_process
 
+        print(f"Generating labels for {feature_file_length} feature files...")
         for index in range(self.n_process):
             start_index = index * file_per_process
             end_index = min((index + 1) * file_per_process,

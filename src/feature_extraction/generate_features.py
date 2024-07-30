@@ -154,28 +154,30 @@ class FeatureExtractor():
         - wav_list_length (int): Total number of audio files to process.
         """
         for sub_list_index, file in enumerate(list_audio_files):
-            index = index * file_per_process + sub_list_index
             input_file = os.path.join(wav_dir, file)
             output_file = os.path.join(feature_dir, file)
             output_file_name_prefix = os.path.basename(
                 output_file).split('.')[0]
             print(
-                f"Extracting features {index + 1}/{wav_list_length}: {input_file}")
+                f"Extracting features: {input_file}")
 
             transcript_file_name = file.replace('.wav', '.csv')
             transcript_file = self._find_transcript_file(
                 transcript_dir, transcript_file_name)
             if not transcript_file:
                 print(f"Transcript file not found for {input_file}")
-                continue
 
             if not file_exists_with_prefix(feature_dir, output_file_name_prefix):
-                self._get_feature(input_file, output_file, transcript_file)
-                print(
-                    f"Extracting features {index + 1}/{wav_list_length}: {input_file} completed")
+                try:
+                    self._get_feature(input_file, output_file, transcript_file)
+                    print(
+                        f"Extracting features: {input_file} completed")
+                except Exception as e:
+                    print(
+                        f"Extracting features: {input_file} failed")
             else:
                 print(
-                    f"Extracting features {index + 1}/{wav_list_length}: {input_file} already exists")
+                    f"Extracting features: {input_file} already exists")
 
     def generate_feature_multiprocessing(self, list_audio_files: str, wav_dir: str, transcript_dir: str, feature_dir: str, n_process: int) -> None:
         """
