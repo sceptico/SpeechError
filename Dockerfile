@@ -1,18 +1,15 @@
 # Use the official Python image from the Docker Hub
-FROM python:3.10
+FROM tensorflow/tensorflow:latest-gpu
 
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy the requirements file into the container
+# Install Python packages
 COPY requirements.txt .
+RUN pip install --upgrade pip && pip install -r requirements.txt
 
-# Install any dependencies specified in requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the specific directories and files into the container
-COPY data/metadata/dataset.csv /app/data/metadata/dataset.csv
-COPY experiments /app/experiments
 COPY scripts /app/scripts
 COPY src /app/src
 

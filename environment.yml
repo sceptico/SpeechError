@@ -1,4 +1,4 @@
-name: error_classification
+name: speech-error
 channels:
   - conda-forge
 dependencies:

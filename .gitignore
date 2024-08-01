@@ -10,6 +10,7 @@
 
 # model files
 *.keras
+*.h5
 
 # metadata files
 metadata/

@@ -119,3 +119,15 @@ class CustomDataGenerator(tf.keras.utils.Sequence):
         while len(self.features_with_events) < self.__len__() * (self.batch_size // 2):
             self.features_with_events += self.features_with_events
             self.labels_with_events += self.labels_with_events
+
+    def get_input_shape(self) -> tuple:
+        """
+        Get the input shape of the data.
+        """
+        return (self.maxlen, self.features[0].shape[1])
+
+    def get_num_classes(self) -> int:
+        """
+        Get the number of classes.
+        """
+        return self.labels[0].shape[-1]

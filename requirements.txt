@@ -6,5 +6,5 @@ soundfile
 audioread
 pandas
 configparser
-tensorflow
 keras
+tensorflow

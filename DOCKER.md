@@ -72,7 +72,7 @@ This pulls the Docker image and converts it to a Singularity image `speech-error
 bash scripts/process_audio_files.sh
 bash scripts/generate_features.sh
 bash scripts/split_data.sh
-bash scripts/train_model.sh
+python3 src/training/training.py experiments/experiment-1-1.cfg
 ```
 
 5. Clear cache if needed:
