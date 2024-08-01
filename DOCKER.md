@@ -64,7 +64,7 @@ This pulls the Docker image and converts it to a Singularity image `speech-error
 
 3. Execute the image using the following command:
 
-`singularity run --nv --bind /work/van-speech-nlp/hui.mac/sfused/data:/app/data,/work/van-speech-nlp/hui.mac/sfused/logs:/app/logs,/work/van-speech-nlp/hui.mac/sfused/experiments:/app/experiments --pwd /app /work/van-speech-nlp/hui.mac/sfused/speech-error-ml_latest.sif /bin/bash`
+`singularity run --nv --bind /work/van-speech-nlp/hui.mac/sfused/data:/app/data,/work/van-speech-nlp/hui.mac/sfused/logs:/app/logs,/work/van-speech-nlp/hui.mac/sfused/experiments:/app/experiments,/work/van-speech-nlp/hui.mac/sfused/models:/app/models,/work/van-speech-nlp/hui.mac/sfused/checkpoints:/app/checkpoints --pwd /app /work/van-speech-nlp/hui.mac/sfused/speech-error-ml_latest.sif /bin/bash`
 
 4. Run the Python script inside the container:
 
@@ -72,7 +72,7 @@ This pulls the Docker image and converts it to a Singularity image `speech-error
 bash scripts/process_audio_files.sh
 bash scripts/generate_features.sh
 bash scripts/split_data.sh
-python3 src/training/training.py experiments/experiment-1-1.cfg
+python3 src/training/training.py experiments/experiment-1-0.cfg
 ```
 
 5. Clear cache if needed:

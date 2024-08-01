@@ -249,7 +249,7 @@ def run_experiment(train_generator, eval_generator, test_generator, config_path:
     num_classes = train_generator.get_num_classes()
 
     # Include the epoch in the file name (uses `str.format`)
-    checkpoint_path = f"{checkpoint_dir}/{model_name}_checkpoint_{{epoch:02d}}.weights.h5"
+    checkpoint_path = f"{checkpoint_dir}/{model_name}_checkpoint_{{epoch:03d}}.weights.h5"
 
     # Create a callback that saves the model's weights every 5 epochs
     checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
