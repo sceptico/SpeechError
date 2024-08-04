@@ -249,14 +249,14 @@ def run_experiment(train_generator, eval_generator, test_generator, config_path:
     num_classes = train_generator.get_num_classes()
 
     # Include the epoch in the file name (uses `str.format`)
-    checkpoint_path = f"{checkpoint_dir}/{model_name}_checkpoint_{{epoch:03d}}.weights.h5"
+    checkpoint_path = f"{checkpoint_dir}/{model_name}_checkpoint_{{epoch:03d}}.keras"
 
     # Create a callback that saves the model's weights every 5 epochs
     checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
         filepath=checkpoint_path,
         monitor='val_loss',
         verbose=1,
-        save_weights_only=True,
+        save_weights_only=False,
         mode='auto',
         save_freq='epoch'
     )
@@ -280,6 +280,7 @@ def run_experiment(train_generator, eval_generator, test_generator, config_path:
     if latest_checkpoint:
         model.load_weights(latest_checkpoint)
         print(f"Loaded weights from {latest_checkpoint}")
+        print(f"Resuming training from epoch {completed_epochs + 1}.")
     else:
         print("No checkpoint found. Training from scratch.")
 
@@ -308,7 +309,9 @@ def run_experiment(train_generator, eval_generator, test_generator, config_path:
         return
 
     log = pd.DataFrame(history.history)
-    log['epoch'] = range(1, len(log['loss']) + 1)
+    # Offset the epoch numbers by the number of completed epochs
+    log['epoch'] = [
+        epoch + completed_epochs for epoch in range(1, len(log['loss']) + 1)]
     cols = log.columns.tolist()
     cols = cols[-1:] + cols[:-1]
     log = log[cols]
