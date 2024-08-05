@@ -128,14 +128,15 @@ def create_model(input_shape: Tuple[int, int], num_classes: int, frame_loss_func
 
     metrics = {
         "frame": [
+            tf.keras.metrics.Precision(name='precision'),
+            CustomF1Score(name='f1_score'),
+            tf.keras.metrics.AUC(name='auc'),
             tf.keras.metrics.TruePositives(name='tp'),
             tf.keras.metrics.FalsePositives(name='fp'),
             tf.keras.metrics.TrueNegatives(name='tn'),
-            tf.keras.metrics.FalseNegatives(name='fn'),
-            tf.keras.metrics.Precision(name='precision'),
-            CustomF1Score(name='f1_score'),
-            tf.keras.metrics.AUC(name='auc'),],
+            tf.keras.metrics.FalseNegatives(name='fn'),],
         "utt": [
+            tf.keras.metrics.Precision(name='precision'),
             tf.keras.metrics.F1Score(name='f1_score'),
             tf.keras.metrics.AUC(name='auc'),
             tf.keras.metrics.TruePositives(name='tp'),
@@ -186,7 +187,7 @@ def print_experiment_results(results: Dict[str, float], model: keras.Model, test
     print("Frame-level true:")
     print(frame_true.flatten())
     print()
-    
+
     print("Utterance-level prediction:")
     print(utt_pred.flatten())
     print("Utterance-level true:")
@@ -212,7 +213,7 @@ def print_experiment_results(results: Dict[str, float], model: keras.Model, test
     print(f"1: {frame_1_count_true}")
     print(f"0: {frame_0_count_true}")
     print()
-    
+
     print("Utterance-level classification:")
     print("-------------------------------")
     print("Predicted:")
