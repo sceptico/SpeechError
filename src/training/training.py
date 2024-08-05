@@ -178,28 +178,54 @@ def print_experiment_results(results: Dict[str, float], model: keras.Model, test
     # Sample Prediction
     sample = test_generator[0]
     frame_pred, utt_pred = model.predict(sample[0])
+    frame_true, utt_true = sample[1]
     print("Sample Predictions:")
     print("-------------------")
     print("Frame-level prediction:")
     print(frame_pred.flatten())
+    print("Frame-level true:")
+    print(frame_true.flatten())
     print()
+    
     print("Utterance-level prediction:")
     print(utt_pred.flatten())
+    print("Utterance-level true:")
+    print(utt_true.flatten())
     print()
 
     frame_classification = np.where(frame_pred > 0.5, 1, 0)
     utt_classification = np.where(utt_pred > 0.5, 1, 0)
 
+    frame_classification_true = np.where(frame_true > 0.5, 1, 0)
+    utt_classification_true = np.where(utt_true > 0.5, 1, 0)
+
     print("Frame-level classification counts:")
-    print("---------------------------")
+    print("----------------------------------")
+    print("Predicted:")
     frame_1_count = np.count_nonzero(frame_classification == 1)
     frame_0_count = np.count_nonzero(frame_classification == 0)
     print(f"1: {frame_1_count}")
     print(f"0: {frame_0_count}")
+    print("True:")
+    frame_1_count_true = np.count_nonzero(frame_classification_true == 1)
+    frame_0_count_true = np.count_nonzero(frame_classification_true == 0)
+    print(f"1: {frame_1_count_true}")
+    print(f"0: {frame_0_count_true}")
     print()
+    
     print("Utterance-level classification:")
     print("-------------------------------")
+    print("Predicted:")
     print(utt_classification.flatten())
+    print("True:")
+    print(utt_classification_true.flatten())
+    print()
+
+    results = model.evaluate(test_generator, return_dict=True)
+    print("Evaluation Results (Test Set):")
+    print("-----------------------------")
+    for key, value in results.items():
+        print(f"{key}: {value}")
     print()
 
 
@@ -326,8 +352,8 @@ def run_experiment(train_generator, eval_generator, test_generator, config_path:
     model_path = os.path.join(model_dir, f"{model_name}_epoch_{epochs}.keras")
     model.save(model_path)
     print(f"Model saved to: {model_path}")
-
     print(f"Experiment with configuration \"{config_path}\" completed.")
+    print()
 
 
 def parse_config(config_path: str) -> Dict[str, Dict[str, str]]:
@@ -401,7 +427,7 @@ if __name__ == "__main__":
 
     # Create reusable CustomDataGenerator objects
     train_generator = CustomDataGenerator(
-        train_features, train_labels, batch_size=batch_size, maxlen=maxlen)
+        train_features, train_labels, batch_size=batch_size, maxlen=maxlen, enforce_event_split=True)
     eval_generator = CustomDataGenerator(
         eval_features, eval_labels, batch_size=batch_size, maxlen=maxlen)
     test_generator = CustomDataGenerator(

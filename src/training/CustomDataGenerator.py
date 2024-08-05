@@ -6,21 +6,23 @@ from util import pad_sequences
 
 
 class CustomDataGenerator(tf.keras.utils.Sequence):
-    def __init__(self, features: List[np.ndarray], labels: List[np.ndarray], batch_size: int, maxlen: int, **kwargs):
+    def __init__(self, features: List[np.ndarray], labels: List[np.ndarray], batch_size: int, maxlen: int, enforce_event_split: bool = False, **kwargs):
         """
-        Custom data generator that ensures that every batch has at least one sample with events.
+        Custom data generator that optionally ensures a certain percentage of each batch contains samples with events.
 
         Args:
         - features (List[np.ndarray]): The features.
         - labels (List[np.ndarray]): The labels.
         - batch_size (int): The batch size.
         - maxlen (int): The maximum sequence length.
+        - enforce_event_split (bool): Whether to enforce a custom event split (e.g., 20% of each batch contains events).
         """
         super().__init__(**kwargs)
         self.features = features
         self.labels = labels
         self.batch_size = batch_size
         self.maxlen = maxlen
+        self.enforce_event_split = enforce_event_split
 
         # Split data into samples with events and without events
         self.features_with_events = [f for f, l in zip(
@@ -36,48 +38,58 @@ class CustomDataGenerator(tf.keras.utils.Sequence):
         """
         Calculate the number of batches in the generator.
         """
-        return int(np.floor(len(self.features) / self.batch_size))
+        return int(np.ceil(len(self.features) / self.batch_size))
 
     def __getitem__(self, index):
         """
-        Generate one batch of data. Ensure that every batch has at least one sample with events.
-        If there are not enough samples with events, repeat them to fill the batches.
+        Generate one batch of data. Optionally ensure that a certain percentage of each batch contains samples with events.
 
         Args:
         - index (int): The index of the batch.
         """
-        # Calculate how many samples with events to include in this batch
-        samples_per_batch_with_events = max(
-            1, len(self.features_with_events) // self.__len__())
+        batch_features = []
+        batch_labels = []
 
-        start_idx = index * samples_per_batch_with_events
-        end_idx = (index + 1) * samples_per_batch_with_events
+        if self.enforce_event_split:
+            # Ensure at least 20% of samples contain events
+            num_with_events = max(1, int(self.batch_size * 0.2))
+            if len(self.features_with_events) >= num_with_events:
+                batch_features.extend(
+                    self.features_with_events[:num_with_events])
+                batch_labels.extend(self.labels_with_events[:num_with_events])
 
-        if end_idx > len(self.features_with_events):
-            end_idx = len(self.features_with_events)
-            start_idx = end_idx - samples_per_batch_with_events
+                self.features_with_events = self.features_with_events[num_with_events:]
+                self.labels_with_events = self.labels_with_events[num_with_events:]
+            else:
+                batch_features.extend(self.features_with_events)
+                batch_labels.extend(self.labels_with_events)
 
-        batch_features_with_events = self.features_with_events[start_idx:end_idx]
-        batch_labels_with_events = self.labels_with_events[start_idx:end_idx]
+                self.features_with_events = []
+                self.labels_with_events = []
 
-        # Fill the rest of the batch with samples without events
-        remaining_batch_size = self.batch_size - \
-            len(batch_features_with_events)
+            remaining_batch_size = self.batch_size - len(batch_features)
+            if len(self.features_without_events) >= remaining_batch_size:
+                batch_features.extend(
+                    self.features_without_events[:remaining_batch_size])
+                batch_labels.extend(
+                    self.labels_without_events[:remaining_batch_size])
 
-        if len(self.features_without_events) >= remaining_batch_size:
-            batch_features_without_events = self.features_without_events[:remaining_batch_size]
-            batch_labels_without_events = self.labels_without_events[:remaining_batch_size]
-            self.features_without_events = self.features_without_events[remaining_batch_size:]
-            self.labels_without_events = self.labels_without_events[remaining_batch_size:]
+                # Rotate the data pool for samples without events
+                self.features_without_events = self.features_without_events[
+                    remaining_batch_size:] + batch_features[num_with_events:]
+                self.labels_without_events = self.labels_without_events[
+                    remaining_batch_size:] + batch_labels[num_with_events:]
+            else:
+                batch_features.extend(self.features_without_events)
+                batch_labels.extend(self.labels_without_events)
         else:
-            batch_features_without_events = self.features_without_events
-            batch_labels_without_events = self.labels_without_events
-            self.features_without_events = []
-            self.labels_without_events = []
+            # If not enforcing event split, just shuffle and batch the data
+            start_idx = index * self.batch_size
+            end_idx = min((index + 1) * self.batch_size, len(self.features))
+            batch_features = self.features[start_idx:end_idx]
+            batch_labels = self.labels[start_idx:end_idx]
 
-        batch_features = batch_features_with_events + batch_features_without_events
-        batch_labels = batch_labels_with_events + batch_labels_without_events
-
+        # Prepare the batch
         batch_features = pad_sequences(batch_features, self.maxlen)
         batch_labels_frame = pad_sequences(batch_labels, self.maxlen)
         batch_labels_utt = np.any(
@@ -87,7 +99,7 @@ class CustomDataGenerator(tf.keras.utils.Sequence):
 
     def on_epoch_end(self):
         """
-        Shuffle the data at the end of each epoch. If not enough samples with events, repeat them to fill the batches.
+        Shuffle the data at the end of each epoch.
         """
         combined_with_events = list(
             zip(self.features_with_events, self.labels_with_events))
@@ -102,23 +114,22 @@ class CustomDataGenerator(tf.keras.utils.Sequence):
                 *combined_with_events)
             self.features_with_events = list(self.features_with_events)
             self.labels_with_events = list(self.labels_with_events)
-        else:
-            self.features_with_events = []
-            self.labels_with_events = []
 
         if combined_without_events:
             self.features_without_events, self.labels_without_events = zip(
                 *combined_without_events)
             self.features_without_events = list(self.features_without_events)
             self.labels_without_events = list(self.labels_without_events)
-        else:
-            self.features_without_events = []
-            self.labels_without_events = []
 
-        # If not enough samples with events, repeat them to fill the batches
-        while len(self.features_with_events) < self.__len__() * (self.batch_size // 2):
-            self.features_with_events += self.features_with_events
-            self.labels_with_events += self.labels_with_events
+        if self.enforce_event_split:
+            # Replenish the data pools after shuffling
+            while len(self.features_with_events) < self.__len__() * (self.batch_size * 0.2):
+                self.features_with_events += self.features_with_events
+                self.labels_with_events += self.labels_with_events
+
+            while len(self.features_without_events) < self.__len__() * (self.batch_size * 0.8):
+                self.features_without_events += self.features_without_events
+                self.labels_without_events += self.labels_without_events
 
     def get_input_shape(self) -> tuple:
         """
@@ -131,3 +142,62 @@ class CustomDataGenerator(tf.keras.utils.Sequence):
         Get the number of classes.
         """
         return self.labels[0].shape[-1]
+
+
+if __name__ == "__main__":
+    import pandas as pd
+    from typing import Tuple
+
+    def load_data_from_csv(csv_file: str) -> Tuple[List[np.ndarray], List[np.ndarray]]:
+        """
+        Load .npy files specified in the CSV file.
+
+        Args:
+        - csv_file (str): The path to the CSV file containing file names and labels.
+
+        Returns:
+        - features (List[np.ndarray]): The loaded features.
+        - labels (List[np.ndarray]): The loaded labels.
+        """
+        data = pd.read_csv(csv_file)
+        features = []
+        labels = []
+
+        for index, row in data.iterrows():
+            feature_path = row['feature_file']
+            label_path = row['label_file']
+
+            feature = np.load(feature_path)
+            label = np.load(label_path)
+
+            features.append(feature)
+            labels.append(label)
+
+        return features, labels
+
+    test_csv = "data/metadata/test.csv"
+
+    # Load data once
+    print(f"Loading test data from {test_csv}...")
+    features, labels = load_data_from_csv(test_csv)
+    maxlen = max(max([len(f) for f in features]),
+                 max([len(l) for l in labels]))
+
+    print("without event split")
+    generator = CustomDataGenerator(
+        features, labels, batch_size=32, maxlen=maxlen)
+
+    for i in range(len(generator)):
+        batch_features, (batch_labels_frame, batch_labels_utt) = generator[i]
+        print(f"Batch {i} - Features shape: {batch_features.shape}")
+        print(f"Batch {i} - Utterance labels: {batch_labels_utt.flatten()}")
+        
+    print()
+    print("with event split")
+    generator = CustomDataGenerator(
+        features, labels, batch_size=32, maxlen=maxlen, enforce_event_split=True)
+    
+    for i in range(len(generator)):
+        batch_features, (batch_labels_frame, batch_labels_utt) = generator[i]
+        print(f"Batch {i} - Features shape: {batch_features.shape}")
+        print(f"Batch {i} - Utterance labels: {batch_labels_utt.flatten()}")
