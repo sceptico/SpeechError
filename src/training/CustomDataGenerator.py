@@ -191,12 +191,12 @@ if __name__ == "__main__":
         batch_features, (batch_labels_frame, batch_labels_utt) = generator[i]
         print(f"Batch {i} - Features shape: {batch_features.shape}")
         print(f"Batch {i} - Utterance labels: {batch_labels_utt.flatten()}")
-        
+
     print()
     print("with event split")
     generator = CustomDataGenerator(
         features, labels, batch_size=32, maxlen=maxlen, enforce_event_split=True)
-    
+
     for i in range(len(generator)):
         batch_features, (batch_labels_frame, batch_labels_utt) = generator[i]
         print(f"Batch {i} - Features shape: {batch_features.shape}")
