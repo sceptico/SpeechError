@@ -4,6 +4,7 @@ import tensorflow as tf
 import pandas as pd
 from tensorflow import keras
 from tensorflow.keras import layers
+from sklearn.model_selection import KFold
 from typing import Tuple, List, Dict
 import argparse
 import configparser

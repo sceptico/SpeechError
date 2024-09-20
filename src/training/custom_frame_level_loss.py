@@ -1,5 +1,13 @@
+"""
+custom_frame_level_loss.py
+
+Custom frame-level loss function for the model training process.
+"""
+
 import tensorflow as tf
 from tensorflow import keras
+
+SMALL_LOSS = tf.constant(1e-7, dtype=tf.float32)
 
 
 @tf.function
@@ -16,7 +24,6 @@ def custom_frame_level_loss(y_true: tf.Tensor, y_pred_frame: tf.Tensor) -> tf.Te
     """
     # Create a mask for the true utterance labels
     # Only consider the utterances with speech events when calculating the loss
-    SMALL_LOSS = tf.constant(1e-7, dtype=tf.float32)
 
     # Compute y_true_utt to check if an utterance contains an event or not
     y_true_utt = tf.cast(tf.reduce_any(tf.equal(y_true, 1), axis=-1), tf.int32)

@@ -1,3 +1,9 @@
+"""
+attention.py
+
+Custom Keras layer to compute the context vector using the attention mechanism.
+"""
+
 import tensorflow as tf
 from tensorflow.keras.layers import Layer
 
@@ -5,6 +11,13 @@ from tensorflow.keras.layers import Layer
 class Attention(Layer):
     """
     Custom Keras layer to compute the context vector using the attention mechanism.
+
+    Attributes:
+    - None
+
+    Methods:
+    - __init__: Initializes the layer.
+    - call: Defines the computation that will be performed on the input data.
     """
 
     def __init__(self, **kwargs):

@@ -1,35 +1,82 @@
+"""
+custom_f1_score.py
+
+This script defines a custom F1 score metric for the model training process.
+"""
+
 import tensorflow as tf
 from tensorflow.keras import backend as K
 
 
-def custom_f1_score(y_true, y_pred):
+class CustomF1Score(tf.keras.metrics.Metric):
     """
-    Custom F1 score that reshapes 3D inputs to 2D.
+    Custom F1 score metric for the model training process.
 
-    Args:
-    - y_true (tf.Tensor): The true labels.
-    - y_pred (tf.Tensor): The predicted labels.
+    Attributes:
+    - name: Name of the metric.
+    - true_positives: Number of true positives.
+    - false_positives: Number of false positives.
+    - false_negatives: Number of false negatives.
 
-    Returns:
-    - f1_score (tf.Tensor): The computed F1 score.
+    Methods:
+    - __init__: Initializes the metric.
+    - update_state: Updates the state of the metric.
+    - result: Calculates the F1 score.
+    - reset_states: Resets the state of the metric.
     """
-    # Ensure both tensors have the same data type
-    y_true = tf.cast(y_true, dtype=tf.float32)
-    y_pred = tf.cast(y_pred, dtype=tf.float32)
 
-    # Reshape the inputs to 2D
-    y_true = K.flatten(y_true)
-    y_pred = K.flatten(y_pred)
+    def __init__(self, name: str = "custom_f1_score", **kwargs) -> None:
+        """
+        Initializes the metric.
 
-    # Calculate precision and recall
-    true_positives = K.sum(K.round(K.clip(y_true * y_pred, 0, 1)))
-    possible_positives = K.sum(K.round(K.clip(y_true, 0, 1)))
-    predicted_positives = K.sum(K.round(K.clip(y_pred, 0, 1)))
+        Args:
+        - name (str): Name of the metric.
+        """
+        super(CustomF1Score, self).__init__(name=name, **kwargs)
+        self.true_positives = self.add_weight(name="tp", initializer="zeros")
+        self.false_positives = self.add_weight(name="fp", initializer="zeros")
+        self.false_negatives = self.add_weight(name="fn", initializer="zeros")
 
-    precision = true_positives / (predicted_positives + K.epsilon())
-    recall = true_positives / (possible_positives + K.epsilon())
+    def update_state(self, y_true: tf.Tensor, y_pred: tf.Tensor, sample_weight=None) -> None:
+        """
+        Updates the state of the metric.
 
-    # Calculate F1 score
-    f1_score = 2 * (precision * recall) / (precision + recall + K.epsilon())
+        Args:
+        - y_true (tf.Tensor): True labels.
+        - y_pred (tf.Tensor): Predicted labels.
+        - sample_weight: Optional weighting of samples.
+        """
+        y_true = tf.cast(y_true, dtype=tf.float32)
+        y_pred = tf.cast(y_pred, dtype=tf.float32)
+        y_pred = tf.round(y_pred)
 
-    return f1_score
+        tp = tf.reduce_sum(y_true * y_pred)
+        fp = tf.reduce_sum(y_pred) - tp
+        fn = tf.reduce_sum(y_true) - tp
+
+        self.true_positives.assign_add(tp)
+        self.false_positives.assign_add(fp)
+        self.false_negatives.assign_add(fn)
+
+    def result(self) -> tf.Tensor:
+        """
+        Calculates the F1 score.
+
+        Returns:
+        - f1_score (tf.Tensor): The computed F1 score.
+        """
+        precision = self.true_positives / \
+            (self.true_positives + self.false_positives + K.epsilon())
+        recall = self.true_positives / \
+            (self.true_positives + self.false_negatives + K.epsilon())
+        f1_score = 2 * (precision * recall) / \
+            (precision + recall + K.epsilon())
+        return f1_score
+
+    def reset_states(self) -> None:
+        """
+        Resets the state of the metric.
+        """
+        self.true_positives.assign(0)
+        self.false_positives.assign(0)
+        self.false_negatives.assign(0)
