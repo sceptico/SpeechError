@@ -12,7 +12,7 @@ from tensorflow.keras import layers
 from typing import Tuple
 
 from attention import Attention
-from custom_frame_level_loss import custom_frame_level_loss
+from custom_frame_level_loss import CustomFrameLevelLoss
 from custom_f1_score import CustomF1Score
 
 
@@ -71,8 +71,10 @@ def create_model(
     model = keras.Model(inputs=inputs, outputs=[output_frame, output_utt])
 
     # Configure loss functions
-    frame_loss = custom_frame_level_loss if frame_loss_function == "custom_frame_level_loss" else frame_loss_function
-    utt_loss = custom_frame_level_loss if utt_loss_function == "custom_frame_level_loss" else utt_loss_function
+    frame_loss = CustomFrameLevelLoss(
+    ) if frame_loss_function == "custom_frame_level_loss" else frame_loss_function
+    utt_loss = CustomFrameLevelLoss(
+    ) if utt_loss_function == "custom_frame_level_loss" else utt_loss_function
 
     losses = {
         "frame": frame_loss,

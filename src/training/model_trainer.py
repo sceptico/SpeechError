@@ -4,17 +4,23 @@ model_trainer.py
 Class for training models using k-fold cross-validation.
 """
 import os
+import json
+import glob
+import re
 import pandas as pd
 import numpy as np
 import tensorflow as tf
 import tensorflow.keras as keras
 from sklearn.model_selection import KFold
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Any
 
 from data_utils import load_data_from_csv, get_max_sequence_length
 from custom_data_generator import CustomDataGenerator
 from model_utils import create_model
 from parse_config import parse_config
+from custom_f1_score import CustomF1Score
+from custom_frame_level_loss import CustomFrameLevelLoss
+from attention import Attention
 
 
 class ModelTrainer:
@@ -55,6 +61,9 @@ class ModelTrainer:
     - process_cross_validation_metrics: Process cross-validation metrics and save them to a CSV file.
     - train_final_model: Train the final model on the full training and evaluation data.
     - run: Run the training and evaluation process.
+    - initialize_fold_log: Initialize the fold log file.
+    - update_fold_status: Update the status of a fold in the fold log file.
+    - check_fold_status: Check the status of a fold in the fold log file.
     """
 
     def __init__(self, config_paths: List[str]) -> None:
@@ -130,29 +139,39 @@ class ModelTrainer:
         - fold_no (int): Fold number for cross-validation.
         """
         callbacks = []
-
         model_name = self.log_config["model_name"]
         checkpoint_dir = self.log_config["checkpoint_dir"]
+        log_dir = self.log_config["log_dir"]
         os.makedirs(checkpoint_dir, exist_ok=True)
+        os.makedirs(log_dir, exist_ok=True)
 
         # Model checkpointing
         if fold_no is not None:
             checkpoint_path = os.path.join(
                 checkpoint_dir, f"{model_name}_fold_{fold_no}_epoch_{{epoch:03d}}.keras")
+            log_file = os.path.join(
+                log_dir, f"{model_name}_fold_{fold_no}_training_log.csv")
+
         else:
             checkpoint_path = os.path.join(
                 checkpoint_dir, f"{model_name}_epoch_{{epoch:03d}}.keras")
+            log_file = os.path.join(log_dir, f"{model_name}_training_log.csv")
 
+        # Model checkpoint callback
         checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
             filepath=checkpoint_path,
             monitor='val_loss',
-            save_best_only=True,
+            save_best_only=False,
             save_weights_only=False,
             verbose=1
         )
         callbacks.append(checkpoint_callback)
 
-        # Early stopping
+        # CSV logging callback
+        csv_logger = tf.keras.callbacks.CSVLogger(log_file, append=True)
+        callbacks.append(csv_logger)
+
+        # Early stopping callback
         early_stopping = tf.keras.callbacks.EarlyStopping(
             monitor='val_loss',
             patience=self.patience,
@@ -207,8 +226,35 @@ class ModelTrainer:
         - fold_no (int): Fold number for cross-validation.
         """
         callbacks = self.get_callbacks(fold_no)
+        initial_epoch = 0
+
+        if fold_no is not None:
+            # Check for existing checkpoint
+            checkpoint_dir = self.log_config["checkpoint_dir"]
+            model_name = self.log_config["model_name"]
+            pattern = os.path.join(
+                checkpoint_dir, f"{model_name}_fold_{fold_no}_epoch_*.keras")
+            checkpoint_files = glob.glob(pattern)
+
+            if checkpoint_files:
+                # Get the latest checkpoint
+                latest_checkpoint = max(checkpoint_files, key=os.path.getctime)
+                print(f"Loading model from checkpoint: {latest_checkpoint}")
+                self.model = tf.keras.models.load_model(
+                    latest_checkpoint, custom_objects=self.get_custom_objects())
+
+                # Extract initial epoch from filename
+                epoch_match = re.search(r'epoch_(\d+)', latest_checkpoint)
+
+                if epoch_match:
+                    initial_epoch = int(epoch_match.group(1))
+
+            else:
+                print("No checkpoint found. Training from scratch.")
+
         self.history = self.model.fit(
             self.train_generator,
+            initial_epoch=initial_epoch,
             epochs=self.epochs,
             validation_data=self.eval_generator,
             callbacks=callbacks
@@ -240,12 +286,19 @@ class ModelTrainer:
 
         The method also saves the model and training history for each fold.
         """
+        self.initialize_fold_log()
+        metrics_per_fold = self.load_metrics_per_fold()
         kfold = KFold(n_splits=self.k_folds, shuffle=True, random_state=42)
-        metrics_per_fold = []
         fold_no = 1
 
         for train_idx, val_idx in kfold.split(self.all_features):
-            print(f"Starting fold {fold_no}/{self.k_folds}")
+            status = self.check_fold_status(fold_no)
+            if status == 'Completed':
+                print(f"Fold {fold_no} is already completed. Skipping.")
+                fold_no += 1
+                continue
+            else:
+                print(f"Starting fold {fold_no}/{self.k_folds}")
 
             # Split data
             train_features_fold = [self.all_features[i] for i in train_idx]
@@ -276,14 +329,58 @@ class ModelTrainer:
             # Evaluate model
             results = self.evaluate(self.eval_generator, fold_no)
             metrics_per_fold.append(results)
+            self.save_metrics_per_fold(metrics_per_fold)
 
             # Save model and history
             self.save_model_and_history(fold_no)
+
+            # Update fold status to 'Completed'
+            self.update_fold_status(fold_no, 'Completed')
 
             fold_no += 1
 
         # After cross-validation, process metrics
         self.process_cross_validation_metrics(metrics_per_fold)
+
+    def save_metrics_per_fold(self, metrics_per_fold: List[Dict[str, float]]) -> None:
+        """
+        Save metrics per fold to a JSON file.
+
+        Args:
+        - metrics_per_fold (List[Dict[str, float]]): List of metrics for each fold.
+        """
+        metrics_path = os.path.join(
+            self.log_config['log_dir'], 'metrics_per_fold.json')
+
+        # Convert NumPy arrays to lists for serialization
+        serializable_metrics = []
+        for result in metrics_per_fold:
+            serializable_result = {}
+            for key, value in result.items():
+                if isinstance(value, np.ndarray):
+                    serializable_result[key] = value.tolist()
+                else:
+                    serializable_result[key] = value
+            serializable_metrics.append(serializable_result)
+
+        with open(metrics_path, 'w') as f:
+            json.dump(serializable_metrics, f)
+
+    def load_metrics_per_fold(self) -> List[Dict[str, float]]:
+        """
+        Load metrics per fold from a JSON file.
+
+        Returns:
+        - metrics_per_fold (List[Dict[str, float]]): List of metrics for each fold.
+        """
+        metrics_path = os.path.join(
+            self.log_config['log_dir'], 'metrics_per_fold.json')
+        if os.path.exists(metrics_path):
+            with open(metrics_path, 'r') as f:
+                metrics_per_fold = json.load(f)
+                return metrics_per_fold
+        else:
+            return []
 
     def save_model_and_history(self, fold_no: int = None) -> None:
         """
@@ -300,11 +397,6 @@ class ModelTrainer:
             model_name_log = f"{model_name}_fold_{fold_no}"
         else:
             model_name_log = model_name
-
-        # Save training history
-        log_path = os.path.join(log_dir, f"{model_name_log}_log.csv")
-        pd.DataFrame(self.history.history).to_csv(log_path, index=False)
-        print(f"Training history saved to: {log_path}")
 
         # Save the model
         model_path = os.path.join(model_dir, f"{model_name_log}.keras")
@@ -371,3 +463,69 @@ class ModelTrainer:
         self.initialize_generators()
         self.perform_cross_validation()
         self.train_final_model()
+
+    def get_custom_objects(self) -> Dict[str, Any]:
+        """
+        Get custom objects for loading the model. All custom objects used in the model
+        should be added to this dictionary, but only the necessary ones will be loaded.
+
+        Returns:
+        - custom_objects (Dict[str, Any]): Dictionary of custom objects.
+        """
+        custom_objects = {
+            'Attention': Attention,
+            'custom_frame_level_loss': CustomFrameLevelLoss,
+            'CustomF1Score': CustomF1Score,
+        }
+
+        return custom_objects
+
+    def initialize_fold_log(self) -> None:
+        """
+        Initialize the fold log file.
+        """
+        self.fold_log_path = os.path.join(
+            self.log_config['log_dir'], 'folds_status.log')
+        if not os.path.exists(self.fold_log_path):
+            # Initialize log file with all folds marked as Incomplete
+            with open(self.fold_log_path, 'w') as log_file:
+                for fold_no in range(1, self.k_folds + 1):
+                    log_file.write(f"Fold {fold_no}: Incomplete\n")
+
+    def update_fold_status(self, fold_no: int, status: str) -> None:
+        """
+        Update the status of a fold in the fold log file.
+
+        Args:
+        - fold_no (int): Fold number.
+        - status (str): New status for the fold.
+        """
+        # Read current statuses
+        with open(self.fold_log_path, 'r') as log_file:
+            lines = log_file.readlines()
+
+        # Update the status of the current fold
+        with open(self.fold_log_path, 'w') as log_file:
+            for line in lines:
+                if line.startswith(f"Fold {fold_no}:"):
+                    log_file.write(f"Fold {fold_no}: {status}\n")
+                else:
+                    log_file.write(line)
+
+    def check_fold_status(self, fold_no: int) -> str:
+        """
+        Check the status of a fold in the fold log file.
+
+        Args:
+        - fold_no (int): Fold number.
+
+        Returns:
+        - status (str): Status of the fold.
+        """
+        with open(self.fold_log_path, 'r') as log_file:
+            for line in log_file:
+                if line.startswith(f"Fold {fold_no}:"):
+                    status = line.strip().split(': ')[1]
+                    return status
+
+        return 'Incomplete'  # Default if not found

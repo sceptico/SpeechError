@@ -41,7 +41,7 @@ singularity run --nv \
     --pwd /app "$image_path" /bin/bash -c "
         
     echo 'Starting training with configuration files: $config_files'
-    python3 src/training/training.py $config_files
+    python3 src/training/main.py $config_files
 "
 
 echo "Completed experiment with configuration files: $config_files"
