@@ -1,3 +1,22 @@
+"""
+generate_features.py
+
+This script is used to extract features from audio files and save them to disk.
+
+Usage:
+    python generate_features.py --wav_list <wav_list> --wav_dir <wav_dir --transcript_dir <transcript_dir> --feature_dir <feature_dir> --feature_config <feature_config> --n_process <n_process>
+    
+    - wav_list (str): Path to the list of audio files to extract features from.
+    - wav_dir (str): Directory containing the (.wav) audio files.
+    - transcript_dir (str): Directory containing the (.csv) transcript files.
+    - feature_dir (str): Directory to save the extracted features.
+    - feature_config (str): Path to the feature extraction configuration file.
+    - n_process (int): Number of processes to use for feature extraction.
+    
+Example:
+    python generate_features.py --wav_list /data/metadata/wav_list.lst --wav_dir /data/audio --transcript_dir /data/transcript --feature_dir /data/features --feature_config /src/feature_extraction/feature.cfg --n_process 4
+"""
+
 import os
 import configparser
 from typing import List

@@ -1,4 +1,6 @@
 """
+generate_audio_list.py
+
 This script is used to generate a list of audio files in a directory and save it to a .lst file.
 
 Usage:

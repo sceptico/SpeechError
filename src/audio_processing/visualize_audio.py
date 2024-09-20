@@ -1,5 +1,7 @@
 """
-This file is used to visualize audio data.
+visualize_audio.py
+
+This file is used to visualize audio data and save the visualization as an image.
 
 Usage:
     python visualize_audio.py --audio_path <audio_path> --output_dir <output_dir>
@@ -20,6 +22,7 @@ import librosa
 import soundfile as sf
 import argparse
 
+
 def visualize_audio(audio_path: str, output_dir: str, start_time: float = 0, end_time: float = None) -> None:
     """
     Visualize audio data.
@@ -29,7 +32,7 @@ def visualize_audio(audio_path: str, output_dir: str, start_time: float = 0, end
     - output_dir (str): The directory to save the visualization.
     - start_time (float): The start time of the audio segment to visualize.
     - end_time (float): The end time of the audio segment to visualize.
-    
+
     Returns:
     - None
     """
@@ -56,12 +59,14 @@ def visualize_audio(audio_path: str, output_dir: str, start_time: float = 0, end
     plt.tight_layout()
 
     # Save the plot
-    output_path = os.path.join(output_dir, f'{os.path.basename(audio_path).replace(".wav", "_waveform")}_{int(start_time)}_to_{int(end_time)}s.png')
+    output_path = os.path.join(
+        output_dir, f'{os.path.basename(audio_path).replace(".wav", "_waveform")}_{int(start_time)}_to_{int(end_time)}s.png')
     plt.savefig(output_path)
     print(f'Audio waveform saved to {output_path}.')
 
     plt.show()
-    
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Visualize audio data.')
     parser.add_argument('--audio_path', type=str, required=True,
@@ -72,8 +77,8 @@ if __name__ == '__main__':
                         help='The start time of the audio segment to visualize.')
     parser.add_argument('--end_time', type=float, default=None,
                         help='The end time of the audio segment to visualize.')
-    
+
     args = parser.parse_args()
-    
-    visualize_audio(args.audio_path, args.output_dir, args.start_time, args.end_time)
-    
+
+    visualize_audio(args.audio_path, args.output_dir,
+                    args.start_time, args.end_time)

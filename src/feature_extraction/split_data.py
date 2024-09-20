@@ -1,3 +1,20 @@
+"""
+Split data into training, evaluation, and testing sets.
+
+This script reads the label_info.csv file and splits the data into training, evaluation, and testing sets.
+
+Usage:
+    python split_data.py --label_info_path <label_info_path> --output_dir <output_dir> --eval_ratio <eval_ratio> --test_ratio <test_ratio>
+
+    - label_info_path (str): The path to the label_info.csv file.
+    - output_dir (str): The directory to save the split data.
+    - eval_ratio (float): The ratio of samples to include in the evaluation set.
+    - test_ratio (float): The ratio of samples to include in the testing set.
+    
+Example:
+    python split_data.py --label_info_path /data/metadata/label_info.csv --output_dir /data/metadata --eval_ratio 0.1 --test_ratio 0.1
+"""
+
 import os
 import csv
 import random

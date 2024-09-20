@@ -1,3 +1,25 @@
+"""
+generate_labels.py
+
+This script is used to generate labels for the audio features.
+
+Usage:
+    python generate_labels.py --feature_config <feature_config> --annotations_path <annotations_path> --transcript_dir <transcript_dir> --feature_dir <feature_dir> --label_dir <label_dir> --label_info_dir <label_info_dir> --n_process <n_process> --multi_class
+    
+    - feature_config (str): Path to the configuration file.
+    - annotations_path (str): Path to the csv file containing the annotations.
+    - transcript_dir (str): Directory containing the transcript files.
+    - feature_dir (str): Directory containing the audio features (.npy files).
+    - label_dir (str): Directory where the labels will be saved.
+    - label_info_dir (str): Directory where the labels information will be saved.
+    - n_process (int): Number of processes to use for generating the labels.
+    - multi_class (bool): Whether to use multi-class labels. If False, one class (speech error or non-speech error) is used.
+    
+Example:
+    python generate_labels.py --feature_config /src/feature_extraction/feature.cfg --annotations_path /data/dataset.csv --transcript_dir /data/whisperX --feature_dir /data/features --label_dir /data/labels --label_info_dir /data/label_info --n_process 4
+    
+"""
+
 import os
 import argparse
 import numpy as np
