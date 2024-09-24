@@ -1,6 +1,8 @@
 """
 custom_error_rate_metric.py
 
+Currently not used in the project.
+
 Custom error rate metric and logging callback for the model training process.
 """
 

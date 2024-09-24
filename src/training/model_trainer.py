@@ -350,7 +350,7 @@ class ModelTrainer:
         - metrics_per_fold (List[Dict[str, float]]): List of metrics for each fold.
         """
         metrics_path = os.path.join(
-            self.log_config['log_dir'], 'metrics_per_fold.json')
+            self.log_config['log_dir'], f'{self.log_config["model_name"]}_metrics_per_fold.json')
 
         # Convert NumPy arrays to lists for serialization
         serializable_metrics = []
@@ -363,7 +363,7 @@ class ModelTrainer:
                     serializable_result[key] = value
             serializable_metrics.append(serializable_result)
 
-        with open(metrics_path, 'w') as f:
+        with open(metrics_path, 'w', encoding='utf-8') as f:
             json.dump(serializable_metrics, f)
 
     def load_metrics_per_fold(self) -> List[Dict[str, float]]:
@@ -374,9 +374,9 @@ class ModelTrainer:
         - metrics_per_fold (List[Dict[str, float]]): List of metrics for each fold.
         """
         metrics_path = os.path.join(
-            self.log_config['log_dir'], 'metrics_per_fold.json')
+            self.log_config['log_dir'], f'{self.log_config["model_name"]}_metrics_per_fold.json')
         if os.path.exists(metrics_path):
-            with open(metrics_path, 'r') as f:
+            with open(metrics_path, 'r', encoding='utf-8') as f:
                 metrics_per_fold = json.load(f)
                 return metrics_per_fold
         else:
@@ -485,10 +485,10 @@ class ModelTrainer:
         Initialize the fold log file.
         """
         self.fold_log_path = os.path.join(
-            self.log_config['log_dir'], 'folds_status.log')
+            self.log_config['log_dir'], f'{self.log_config["model_name"]}_fold_status.log')
         if not os.path.exists(self.fold_log_path):
             # Initialize log file with all folds marked as Incomplete
-            with open(self.fold_log_path, 'w') as log_file:
+            with open(self.fold_log_path, 'w', encoding='utf-8') as log_file:
                 for fold_no in range(1, self.k_folds + 1):
                     log_file.write(f"Fold {fold_no}: Incomplete\n")
 
@@ -501,11 +501,11 @@ class ModelTrainer:
         - status (str): New status for the fold.
         """
         # Read current statuses
-        with open(self.fold_log_path, 'r') as log_file:
+        with open(self.fold_log_path, 'r', encoding='utf-8') as log_file:
             lines = log_file.readlines()
 
         # Update the status of the current fold
-        with open(self.fold_log_path, 'w') as log_file:
+        with open(self.fold_log_path, 'w', encoding='utf-8') as log_file:
             for line in lines:
                 if line.startswith(f"Fold {fold_no}:"):
                     log_file.write(f"Fold {fold_no}: {status}\n")
@@ -522,7 +522,7 @@ class ModelTrainer:
         Returns:
         - status (str): Status of the fold.
         """
-        with open(self.fold_log_path, 'r') as log_file:
+        with open(self.fold_log_path, 'r', encoding='utf-8') as log_file:
             for line in log_file:
                 if line.startswith(f"Fold {fold_no}:"):
                     status = line.strip().split(': ')[1]
