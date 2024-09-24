@@ -184,9 +184,10 @@ class ModelTrainer:
         log_dir = self.log_config["log_dir"]
         if fold_no is not None:
             tensorboard_log_dir = os.path.join(
-                log_dir, f"tensorboard_logs_fold_{fold_no}")
+                log_dir, f"tensorboard_logs_{model_name}_fold_{fold_no}")
         else:
-            tensorboard_log_dir = os.path.join(log_dir, "tensorboard_logs")
+            tensorboard_log_dir = os.path.join(
+                log_dir, f"tensorboard_logs_{model_name}")
 
         tensorboard_callback = tf.keras.callbacks.TensorBoard(
             log_dir=tensorboard_log_dir,
