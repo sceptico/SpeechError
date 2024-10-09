@@ -16,7 +16,8 @@
 metadata/
 
 # transcription files
-whipserX/
+whipserX/*
+whisperX_word/*
 
 # logs
 logs/
