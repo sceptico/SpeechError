@@ -16,11 +16,12 @@
 metadata/
 
 # transcription files
-whipserX/*
-whisperX_word/*
+data/whipserX/*.csv
+data/whisperX_word/*.json
 
 # logs
-logs/
+data/logs/
+!data/logs/.gitkeep
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
