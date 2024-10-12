@@ -31,3 +31,6 @@ The WhisperX transcript files (.csv) should be saved in the `data/whisperX` fold
 To run the training, you need to run the following command:
 
 `bash scripts/pipeline.sh`
+
+To evaluate the model, you need to run the following command:
+`bash scripts/evaluate_utterance.sh "models/baseline.keras" "data/audio/ac003_2006-09-24.wav"`

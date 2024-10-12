@@ -19,7 +19,7 @@ class CustomDataGenerator(tf.keras.utils.Sequence):
     - labels (List[np.ndarray]): The labels.
     - batch_size (int): The batch size.
     - maxlen (int): The maximum sequence length.
-    - enforce_event_split (bool): Whether to enforce a custom event split (e.g., 20% of each batch contains events).
+    - enforce_event_split (bool): Whether to enforce a custom event split (e.g., 50% of each batch contains events).
 
     Methods:
     - __init__: Initialize the data generator.
@@ -31,7 +31,7 @@ class CustomDataGenerator(tf.keras.utils.Sequence):
     - pad_sequences: Pad sequences to a fixed length.
     """
 
-    def __init__(self, features: List[np.ndarray], labels: List[np.ndarray], batch_size: int, maxlen: int, enforce_event_split: bool = False, **kwargs):
+    def __init__(self, features: List[np.ndarray], labels: List[np.ndarray], batch_size: int, maxlen: int, enforce_event_split: bool = False, event_ratio: float = 0.5, **kwargs):
         """
         Custom data generator that optionally ensures a certain percentage of each batch contains samples with events.
 
@@ -40,7 +40,7 @@ class CustomDataGenerator(tf.keras.utils.Sequence):
         - labels (List[np.ndarray]): The labels.
         - batch_size (int): The batch size.
         - maxlen (int): The maximum sequence length.
-        - enforce_event_split (bool): Whether to enforce a custom event split (e.g., 20% of each batch contains events).
+        - enforce_event_split (bool): Whether to enforce a custom event split (e.g., 50% of each batch contains events).
         """
         super().__init__(**kwargs)
         self.features = features
@@ -48,6 +48,7 @@ class CustomDataGenerator(tf.keras.utils.Sequence):
         self.batch_size = batch_size
         self.maxlen = maxlen
         self.enforce_event_split = enforce_event_split
+        self.event_ratio = event_ratio
 
         # Split data into samples with events and without events
         self.features_with_events = [f for f, l in zip(
@@ -76,8 +77,8 @@ class CustomDataGenerator(tf.keras.utils.Sequence):
         batch_labels = []
 
         if self.enforce_event_split:
-            # Ensure at least 20% of samples contain events
-            num_with_events = max(1, int(self.batch_size * 0.2))
+            # Ensure at least 50% of samples contain events
+            num_with_events = max(1, int(self.batch_size * self.event_ratio))
             if len(self.features_with_events) >= num_with_events:
                 batch_features.extend(
                     self.features_with_events[:num_with_events])
@@ -148,11 +149,11 @@ class CustomDataGenerator(tf.keras.utils.Sequence):
 
         if self.enforce_event_split:
             # Replenish the data pools after shuffling
-            while len(self.features_with_events) < self.__len__() * (self.batch_size * 0.2):
+            while len(self.features_with_events) < self.__len__() * (self.batch_size * self.event_ratio):
                 self.features_with_events += self.features_with_events
                 self.labels_with_events += self.labels_with_events
 
-            while len(self.features_without_events) < self.__len__() * (self.batch_size * 0.8):
+            while len(self.features_without_events) < self.__len__() * (self.batch_size * (1 - self.event_ratio)):
                 self.features_without_events += self.features_without_events
                 self.labels_without_events += self.labels_without_events
 
