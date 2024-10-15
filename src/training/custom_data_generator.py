@@ -115,6 +115,11 @@ class CustomDataGenerator(tf.keras.utils.Sequence):
             batch_features = self.features[start_idx:end_idx]
             batch_labels = self.labels[start_idx:end_idx]
 
+        # Shuffle the current batch
+        batch = list(zip(batch_features, batch_labels))
+        np.random.shuffle(batch)
+        batch_features, batch_labels = zip(*batch)
+
         # Prepare the batch
         batch_features = self.pad_sequences(batch_features, self.maxlen)
         batch_labels_frame = self.pad_sequences(batch_labels, self.maxlen)
