@@ -7,7 +7,7 @@ dependencies:
   - librosa
   - soxr
   - scipy
-  - soundfile
+  # - soundfile
   - audioread
   - pandas
   - configparser

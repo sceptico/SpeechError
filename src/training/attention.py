@@ -7,6 +7,9 @@ Custom Keras layer to compute the context vector using the attention mechanism.
 import tensorflow as tf
 from tensorflow.keras.layers import Layer
 
+# from tensorflow.keras.layers import Dense, Conv2D, Flatten
+
+
 
 class Attention(Layer):
     """

@@ -19,6 +19,7 @@ EVAL_CSV_PATH="$LABEL_INFO_DIR/eval.csv"
 TEST_CSV_PATH="$LABEL_INFO_DIR/test.csv"
 EPOCHS=50
 BATCH_SIZE=64
+EXPERIMENT_CONFIG_PATH=experiments/default.cfg
 
 # Convert mp3 to wav
 echo "Converting mp3 to wav"
@@ -48,4 +49,10 @@ python3 src/feature_extraction/split_data.py --label_info_path $LABEL_INFO_PATH 
 
 # Train model
 echo "Training model"
-python3 src/training/main.py --train_csv_path $TRAIN_CSV_PATH --eval_csv_path $EVAL_CSV_PATH --test_csv_path $TEST_CSV_PATH --epochs $EPOCHS --batch_size $BATCH_SIZE
+# python3 src/training/main.py --train_csv_path $TRAIN_CSV_PATH --eval_csv_path $EVAL_CSV_PATH --test_csv_path $TEST_CSV_PATH --epochs $EPOCHS --batch_size $BATCH_SIZE
+python3 src/training/main.py $EXPERIMENT_CONFIG_PATH
+
+
+#Generate audio visualizations
+#One example: 
+# python src/audio_processing/visualize_audio.py --audio_path data/audio/ac004_2006-10-01.wav --output_dir data/visualization --start_time 166 --end_time 167
