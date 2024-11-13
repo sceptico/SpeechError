@@ -1,3 +1,5 @@
+# not in use, but kept for reference
+
 from sklearn.svm import SVC
 
 def create_svm_model(kernel="rbf", C=1.0, gamma="scale", degree=3, class_weight="balanced"):
